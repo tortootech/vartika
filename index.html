@@ -1,67 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Showcase</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <div class="container">
-            <img src="profile.jpeg"
-            <h1>My Portfolio</h1>
-            <nav>
-                <ul>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#skills">Skills</a></li>
-                    <li><a href="#projects">Projects</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+  <header>
+    <nav>
+      <div class="logo">ProductName</div>
+      <ul>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
 
-    <section id="about">
-        <div class="container">
-            <h2>About Me</h2>
-            <p>Hello! I'm vartika, pursuing bba in sales and marketing  passionate about learning new skills .</p>
-        </div>
-    </section>
+  <section id="hero">
+    <h1>Welcome to ProductName</h1>
+    <p>The best solution for your needs.</p>
+    <a href="#features" class="btn">Explore Features</a>
+  </section>
 
-    <section id="skills">
-        <div class="container">
-            <h2>Skills</h2>
-            <ul>
-                <li>communication</li>
-                <li>digital marketing</li>
-                <li>content writing</li>
-            </ul>
-        </div>
-    </section>
+  <section id="features">
+    <h2>Features</h2>
+    <div class="feature">
+      <img src="feature1.jpg" alt="Feature 1">
+      <h3>Feature 1</h3>
+      <p>High-quality and user-friendly.</p>
+    </div>
+    <div class="feature">
+      <img src="feature2.jpg" alt="Feature 2">
+      <h3>Feature 2</h3>
+      <p>Reliable and efficient performance.</p>
+    </div>
+    <div class="feature">
+      <img src="feature3.jpg" alt="Feature 3">
+      <h3>Feature 3</h3>
+      <p>Cost-effective for all users.</p>
+    </div>
+  </section>
 
-    <section id="projects">
-        <div class="container">
-            <h2>internship</h2>
-            <div class="project-card">
-                <h3>internship1</h3>
-                <p>working as a content writer in irrigatech</p>
-            </div>
-    </section>
+  <section id="pricing">
+    <h2>Pricing</h2>
+    <div class="price-plan">
+      <h3>Basic Plan</h3>
+      <p>$10/month</p>
+      <p>Access to basic features.</p>
+      <button>Subscribe</button>
+    </div>
+    <div class="price-plan">
+      <h3>Pro Plan</h3>
+      <p>$30/month</p>
+      <p>Advanced features included.</p>
+      <button>Subscribe</button>
+    </div>
+    <div class="price-plan">
+      <h3>Enterprise Plan</h3>
+      <p>$50/month</p>
+      <p>Complete access to all features.</p>
+      <button>Subscribe</button>
+    </div>
+  </section>
 
-    <section id="contact">
-        <div class="container">
-            <h2>Contact</h2>
-            <p>Feel free to reach out to me at:</p>
-            
-            </ul>
-        </div>
-    </section>
-
-    <footer>
-        <div class="container">
-            <p>&copy; 2024 vartika. All Rights Reserved.</p>
-        </div>
-    </footer>
+  <footer id="contact">
+    <h2>Contact Us</h2>
+    <form>
+      <input type="text" placeholder="Your Name" required>
+      <input type="email" placeholder="Your Email" required>
+      <textarea placeholder="Your Message" required></textarea>
+      <button type="submit">Send Message</button>
+    </form>
+    <p>&copy; 2024 ProductName. All rights reserved.</p>
+  </footer>
 </body>
 </html>

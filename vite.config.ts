@@ -24,5 +24,7 @@ function bootIntro(): Plugin {
 export default defineConfig({
   // relative asset paths, so the build works at any address (e.g. https://tortootech.github.io/vartika/)
   base: './',
+  // GitHub Pages serves this branch's /docs folder
+  build: { outDir: 'docs', emptyOutDir: true },
   plugins: [react(), bootIntro()],
 });

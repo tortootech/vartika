@@ -22,5 +22,7 @@ function bootIntro(): Plugin {
 }
 
 export default defineConfig({
+  // relative asset paths, so the build works at any address (e.g. https://tortootech.github.io/vartika/)
+  base: './',
   plugins: [react(), bootIntro()],
 });

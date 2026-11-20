@@ -18,7 +18,7 @@
 .n { font: 500 13px/1 var(--font-mono); color: var(--cream-soft); }
 .q { font: 400 clamp(26px, 3.4vw, 54px)/1.08 var(--font-display); letter-spacing: -0.025em; transition: transform 0.4s var(--ease-out); }
 .faq summary:hover .q { transform: translateX(8px); }
-.faq details[open] .q { font-style: italic; }
+.faq details[open] .q { font-weight: 500; }
 .plus { position: relative; width: 22px; height: 22px; align-self: center; }
 .plus::before, .plus::after {
   content: '';

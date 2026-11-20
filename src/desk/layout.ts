@@ -5,7 +5,7 @@ export interface Messy { x: number; y: number; r: number }
 
 export interface FolderDef { messy: Messy; mobile: boolean; depth: number }
 export interface PaperDef { folder: number; slot: 0 | 1; kind: DoodleKind; messy: Messy; depth: number }
-export interface NoteDef { messy: Messy; tone: 'cream' | 'navy' | 'mist'; mobile: boolean; depth: number; tidyR: number }
+export interface NoteDef { messy: Messy; tone: 'cream' | 'navy'; mobile: boolean; depth: number }
 
 /** Index of the folder that opens into the toolkit (section 2). */
 export const TOOLKIT_FOLDER = 2;
@@ -32,17 +32,8 @@ export const papers: PaperDef[] = [
 ];
 
 export const notes: NoteDef[] = [
-  { messy: { x: 0.58, y: 0.14, r: -9 }, tone: 'cream', mobile: true, depth: 12, tidyR: -2 },
-  { messy: { x: 0.2, y: 0.47, r: 12 }, tone: 'navy', mobile: true, depth: 10, tidyR: 1.5 },
-  { messy: { x: 0.8, y: 0.31, r: -5 }, tone: 'mist', mobile: false, depth: 11, tidyR: -1 },
-  { messy: { x: 0.47, y: 0.73, r: 15 }, tone: 'cream', mobile: true, depth: 12, tidyR: 2 },
+  { messy: { x: 0.58, y: 0.14, r: -9 }, tone: 'cream', mobile: true, depth: 12 },
+  { messy: { x: 0.2, y: 0.47, r: 12 }, tone: 'navy', mobile: true, depth: 10 },
+  { messy: { x: 0.8, y: 0.31, r: -5 }, tone: 'cream', mobile: false, depth: 11 },
+  { messy: { x: 0.47, y: 0.73, r: 15 }, tone: 'cream', mobile: true, depth: 12 },
 ];
-
-export const pen = { messy: { x: 0.6, y: 0.42, r: 62 }, depth: 8 };
-
-/** Where the toolkit folder parks before it opens (fraction of the desk). */
-export const TOOLKIT_CENTER = { x: 0.5, y: 0.56 };
-
-/** Small landed tilt for each tool card, deterministic so SSR/CSR and reruns match. */
-export const cardTilt = (i: number) => [-2.2, 1.4, -0.8, 2.4, -1.6, 0.9, -2.6, 1.8, -1.1, 2.1, -0.6, 1.2, -1.9][i % 13];
-export const cardSpin = (i: number) => [-38, 26, -18, 44, -30, 20, -46, 34, -22, 40, -14, 30, -36][i % 13];

@@ -34,7 +34,7 @@
 }
 .close:hover { background: var(--navy); color: var(--cream); }
 .title { font-size: clamp(48px, 7vw, 104px); margin-top: 18px; }
-.kicker { font: italic 300 clamp(22px, 2.4vw, 34px)/1.2 var(--font-display); margin-top: 8px; color: var(--ink-soft); }
+.kicker { font: 300 clamp(22px, 2.4vw, 34px)/1.2 var(--font-display); margin-top: 8px; color: var(--ink-soft); }
 .metrics {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));

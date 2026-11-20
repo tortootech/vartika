@@ -21,7 +21,7 @@
   --shadow-2: 0 2px 4px color-mix(in srgb, var(--navy) 20%, transparent),
     0 18px 40px color-mix(in srgb, var(--navy) 26%, transparent);
 
-  --font-display: 'Fraunces', 'Times New Roman', serif;
+  --font-display: 'Inter', system-ui, sans-serif; /* one family for headlines and body */
   --font-body: 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
@@ -53,6 +53,7 @@ body {
 h1, h2, h3, h4, p, ol, ul, figure { margin: 0; }
 ol, ul { padding: 0; list-style: none; }
 a { color: inherit; }
+em, i { font-style: normal; } /* no italics anywhere */
 button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
 img, svg { display: block; max-width: 100%; }
 
@@ -87,13 +88,13 @@ img, svg { display: block; max-width: 100%; }
 /* shared editorial type */
 .display {
   font-family: var(--font-display);
-  font-optical-sizing: auto;
   font-weight: 300;
-  letter-spacing: -0.035em;
-  line-height: 0.92;
+  letter-spacing: -0.045em;
+  line-height: 0.95;
 }
-.display em { font-style: italic; font-weight: 300; }
-.display strong { font-weight: 800; }
+/* mixed weights instead of italics: <strong> heavy, <em> light */
+.display em { font-style: normal; font-weight: 300; }
+.display strong { font-weight: 700; }
 .mono-label {
   font: 500 12px/1 var(--font-mono);
   letter-spacing: 0.08em;

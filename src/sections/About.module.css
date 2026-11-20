@@ -74,7 +74,7 @@
 .strip span {
   display: inline-flex;
   align-items: center;
-  font: italic 300 clamp(28px, 3.6vw, 60px)/1 var(--font-display);
+  font: 300 clamp(28px, 3.6vw, 60px)/1 var(--font-display);
   letter-spacing: -0.02em;
   white-space: nowrap;
 }

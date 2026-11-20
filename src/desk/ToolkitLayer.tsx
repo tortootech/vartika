@@ -1,13 +1,15 @@
 import { useId, useState } from 'react';
 import { toolkit } from '../content';
 import { ToolGlyph } from './ToolIcons';
-import { cardTilt } from './layout';
 import s from './ToolkitLayer.module.css';
 
+const total = toolkit.groups.reduce((n, g) => n + g.tools.length, 0);
+const pad = (n: number) => String(n).padStart(2, '0');
+
 /**
- * The toolkit: an index card plus three groups of tool cards.
- * In motion mode it sits inside the pinned desk and the cards are animated out of a folder.
- * In reduced-motion mode it is rendered as its own static section.
+ * Slide 2, printed on the inside of the opened folder: a clean index of tools.
+ * In motion mode it sits in the pinned desk and its rows are drawn in by the scroll timeline.
+ * In reduced-motion mode it renders as its own static section.
  */
 export function ToolkitLayer({ standalone = false }: { standalone?: boolean }) {
   const [active, setActive] = useState<string | null>(null);
@@ -17,58 +19,84 @@ export function ToolkitLayer({ standalone = false }: { standalone?: boolean }) {
 
   return (
     <div className={`${s.layer} ${standalone ? s.standalone : ''}`} data-tk-layer>
-      <header className={s.index} data-tk-head>
-        <span className={`mono-label ${s.indexLabel}`}>[ Toolkit ]</span>
+      <header className={s.head}>
+        <p className={`mono-label ${s.label}`} data-tk-head>
+          [ 02 ] Toolkit
+        </p>
         <h2 className={`display ${s.title}`}>
-          <strong>{toolkit.title[0]}</strong> <em>{toolkit.title[1]}</em>
+          <span className={s.line} data-tk-head>
+            <strong>{toolkit.title[0]}</strong>
+          </span>
+          <span className={s.line} data-tk-head>
+            <em>{toolkit.title[1]}</em>
+          </span>
         </h2>
-        <p className={s.sub}>{toolkit.sub}</p>
+        <p className={s.sub} data-tk-head>
+          {toolkit.sub}
+        </p>
+        <dl className={s.stats} data-tk-head>
+          <div>
+            <dt className="mono-label">Tools</dt>
+            <dd data-tk-count data-total={total}>
+              {pad(total)}
+            </dd>
+          </div>
+          <div>
+            <dt className="mono-label">Groups</dt>
+            <dd>{pad(toolkit.groups.length)}</dd>
+          </div>
+        </dl>
       </header>
 
-      {toolkit.groups.map((g, gi) => (
-        <section key={g.id} className={`${s.group} ${s['g_' + g.id]}`} aria-label={g.label}>
-          <h3 className={`mono-label ${s.groupLabel}`} data-tk-head>
-            {g.label}
-          </h3>
-          <ul className={s.cards}>
-            {g.tools.map((t, ti) => {
-              const i = offsets[gi] + ti;
-              const tipId = `${baseId}-tip-${i}`;
-              return (
-                <li key={t.name} className={s.cardWrap} data-card data-tilt={cardTilt(i)} style={standalone ? { rotate: `${cardTilt(i) * 0.5}deg` } : undefined}>
-                  <button
-                    type="button"
-                    className={`${s.card} ${active === t.name ? s.isActive : ''}`}
-                    aria-describedby={tipId}
-                    aria-pressed={active === t.name}
-                    onClick={() => setActive((a) => (a === t.name ? null : t.name))}
-                    onMouseEnter={() => setActive(t.name)}
-                    onMouseLeave={() => setActive((a) => (a === t.name ? null : a))}
-                    onFocus={() => setActive(t.name)}
-                  >
-                    <span className={s.icon}>
-                      <ToolGlyph icon={t.icon} />
-                    </span>
-                    <span className={s.text}>
-                      <span className={s.name}>{t.name}</span>
-                      <span className={s.detail}>{t.detail}</span>
-                    </span>
-                    <span role="tooltip" id={tipId} className={s.tip}>
-                      {t.use}
-                    </span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-      ))}
+      <div className={s.groups}>
+        {toolkit.groups.map((g, gi) => (
+          <section key={g.id} className={`${s.group} ${s['g_' + g.id]}`} aria-label={g.label}>
+            <h3 className={`mono-label ${s.groupHead}`} data-tk-head>
+              <span>{g.label}</span>
+              <span>{pad(g.tools.length)}</span>
+            </h3>
+            <ul className={s.rows}>
+              {g.tools.map((t, ti) => {
+                const i = offsets[gi] + ti;
+                const tipId = `${baseId}-tip-${i}`;
+                return (
+                  <li key={t.name} className={s.rowWrap} data-row>
+                    <span className={s.rule} data-rule aria-hidden="true" />
+                    <button
+                      type="button"
+                      className={`${s.row} ${active === t.name ? s.isActive : ''}`}
+                      aria-describedby={tipId}
+                      aria-pressed={active === t.name}
+                      onClick={() => setActive((a) => (a === t.name ? null : t.name))}
+                      onMouseEnter={() => setActive(t.name)}
+                      onMouseLeave={() => setActive((a) => (a === t.name ? null : a))}
+                      onFocus={() => setActive(t.name)}
+                    >
+                      <span className={s.num}>{pad(i + 1)}</span>
+                      <span className={s.icon}>
+                        <ToolGlyph icon={t.icon} />
+                      </span>
+                      <span className={s.text}>
+                        <span className={s.name}>{t.name}</span>
+                        <span className={s.detail}>{t.detail}</span>
+                      </span>
+                      <span role="tooltip" id={tipId} className={s.tip}>
+                        {t.use}
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        ))}
+      </div>
 
-      {/* Mobile: the "what she uses it for" line shows in one caption slot instead of floating tooltips. */}
-      <p className={s.caption} aria-hidden="true" data-tk-head>
+      {/* Touch screens: the "what she uses it for" line shows here instead of a floating tooltip. */}
+      <p className={s.caption} aria-hidden="true">
         {activeTool ? (
           <>
-            <strong>{activeTool.name}:</strong> {activeTool.use}
+            <strong>{activeTool.name}</strong> {activeTool.use}
           </>
         ) : (
           'Tap a tool to see what she uses it for.'

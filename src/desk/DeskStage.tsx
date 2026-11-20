@@ -4,9 +4,8 @@ import { ScrollTrigger, gsap, prefersReducedMotion, scrollToTarget } from '../li
 import { setSection } from '../lib/store';
 import { useMedia } from '../lib/useMedia';
 import { Doodle } from './Doodles';
-import { Laptop, Mug, Pen, Steam } from './Props';
 import { ToolkitLayer } from './ToolkitLayer';
-import { TOOLKIT_CENTER, TOOLKIT_FOLDER, cardSpin, folders, notes, papers, pen } from './layout';
+import { TOOLKIT_FOLDER, folders, notes, papers } from './layout';
 import s from './DeskStage.module.css';
 
 type Vars = CSSProperties & Record<`--${string}`, string | number>;
@@ -25,9 +24,13 @@ function boxIn(el: HTMLElement, root: HTMLElement) {
 }
 
 const num = (el: HTMLElement, key: string) => Number(el.dataset[key] ?? 0);
+const pad = (n: number) => String(n).padStart(2, '0');
 
 /** Phase boundary: before this time the counter reads 01, after it 02. */
 const PHASE_B = 2.8;
+/** Folder proportions: height = width × FOLDER_H. The back face starts BACK_TOP down (above it is the tab). */
+const FOLDER_H = 1.18;
+const BACK_TOP = 0.08;
 
 export function DeskStage() {
   const stageRef = useRef<HTMLElement>(null);
@@ -39,6 +42,7 @@ export function DeskStage() {
   const visibleFolders = new Set(folderIdx.map((f) => f.i));
   const paperList = papers.filter((p) => visibleFolders.has(p.folder));
   const noteList = notes.filter((n) => !isMobile || n.mobile);
+  const tkPapers = papers.filter((p) => p.folder === TOOLKIT_FOLDER);
 
   // --- the scrubbed timeline -------------------------------------------------
   useLayoutEffect(() => {
@@ -60,7 +64,7 @@ export function DeskStage() {
             trigger: tk,
             start: 'top 50%',
             end: 'bottom 50%',
-            onToggle: (self) => self.isActive && setSection({ index: 2, theme: 'desk' }),
+            onToggle: (self) => self.isActive && setSection({ index: 2, theme: 'navy' }),
           });
       }, stage);
       return () => st.revert();
@@ -70,10 +74,14 @@ export function DeskStage() {
     // Offsets ignore transforms, so these are the tidy positions. Re-measured on every refresh.
     const boxes = new Map<HTMLElement, ReturnType<typeof boxIn>>();
     let size = { w: 0, h: 0 };
+    let zw = 0; // native width of the zoom folder: big enough that its back face covers the screen
+    const zoom = world.querySelector<HTMLElement>('[data-zoom]')!;
     const measure = () => {
       boxes.clear();
       size = { w: world.offsetWidth, h: world.offsetHeight };
-      world.querySelectorAll<HTMLElement>('[data-slot], [data-note], [data-pen], [data-paper], [data-card]').forEach((el) => boxes.set(el, boxIn(el, world)));
+      world.querySelectorAll<HTMLElement>('[data-slot], [data-note], [data-paper]').forEach((el) => boxes.set(el, boxIn(el, world)));
+      zw = Math.ceil(Math.max(size.w, size.h / (FOLDER_H * (1 - BACK_TOP))) * 1.04);
+      zoom.style.setProperty('--fw', `${zw}px`);
     };
     const box = (el: HTMLElement) => boxes.get(el) ?? boxIn(el, world);
     measure();
@@ -84,6 +92,7 @@ export function DeskStage() {
       const H = () => size.h;
       const all = <T extends HTMLElement = HTMLElement>(sel: string, root: ParentNode = world) =>
         Array.from(root.querySelectorAll<T>(sel));
+      let theme: 'desk' | 'navy' = 'desk';
 
       const tl = gsap.timeline({
         defaults: { ease: 'power3.inOut' },
@@ -92,17 +101,22 @@ export function DeskStage() {
           start: 'top top',
           end: () => `+=${Math.round(window.innerHeight * (isMobile ? 4.2 : 4.6))}`,
           pin: true,
-          scrub: 0.9,
+          scrub: 0.8,
           anticipatePin: 1,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
             const t = self.progress * tl.duration();
+            const next = t > PHASE_B + 1.2 ? 'navy' : 'desk';
+            if (next !== theme && self.isActive) {
+              theme = next;
+              setSection({ theme });
+            }
             setSection({ index: t < PHASE_B ? 1 : 2 });
             world.classList.toggle(s.tidy, t > 0.12);
           },
           onToggle: (self) => {
             stage.classList.toggle(s.live, self.isActive);
-            if (self.isActive) setSection({ theme: 'desk' });
+            if (self.isActive) setSection({ theme });
           },
         },
       });
@@ -114,42 +128,23 @@ export function DeskStage() {
       // Folders (back + front panel move as one rigid piece around the slot center)
       const slots = all('[data-slot]');
       slots.forEach((slot, order) => {
-        const parts = all('[data-folder-part]', slot);
-        const mx = num(slot, 'mx');
-        const my = num(slot, 'my');
-        const mr = num(slot, 'mr');
         tl.fromTo(
-          parts,
-          { x: () => mx * W() - box(slot).cx, y: () => my * H() - box(slot).cy, rotation: mr },
+          all('[data-folder-part]', slot),
+          { x: () => num(slot, 'mx') * W() - box(slot).cx, y: () => num(slot, 'my') * H() - box(slot).cy, rotation: num(slot, 'mr') },
           { x: 0, y: 0, rotation: 0, duration: 1 },
           0.05 + order * 0.08,
         );
       });
 
-      // Sticky notes: peel up, then line up along the top edge
+      // Index tags line up along the top edge
       all('[data-note]').forEach((note, i) => {
-        const peel = note.firstElementChild as HTMLElement;
-        const t = 0.12 + i * 0.1;
         tl.fromTo(
           note,
           { x: () => num(note, 'mx') * W() - box(note).cx, y: () => num(note, 'my') * H() - box(note).cy, rotation: num(note, 'mr') },
-          { x: 0, y: 0, rotation: num(note, 'tr'), duration: 0.85 },
-          t,
+          { x: 0, y: 0, rotation: 0, duration: 0.85 },
+          0.12 + i * 0.1,
         );
-        tl.to(peel, { scale: 1.12, rotation: 7, duration: 0.22, ease: 'power2.out' }, t);
-        tl.to(peel, { scale: 1, rotation: 0, duration: 0.45, ease: 'power2.inOut' }, t + 0.3);
       });
-
-      // Pen squares up next to the folders
-      const penEl = world.querySelector<HTMLElement>('[data-pen]');
-      if (penEl) {
-        tl.fromTo(
-          penEl,
-          { x: () => pen.messy.x * W() - box(penEl).cx, y: () => pen.messy.y * H() - box(penEl).cy, rotation: pen.messy.r },
-          { x: 0, y: 0, rotation: 0, duration: 1.2 },
-          0.2,
-        );
-      }
 
       // Papers: fly above their folder, squared and shrunk, then drop in (z-swap behind the front panel)
       all('[data-paper]')
@@ -159,12 +154,7 @@ export function DeskStage() {
           const t = 0.25 + i * (isMobile ? 0.16 : 0.1);
           tl.fromTo(
             p,
-            {
-              x: () => num(p, 'mx') * W() - box(p).cx,
-              y: () => num(p, 'my') * H() - box(p).cy,
-              rotation: num(p, 'mr'),
-              scale: 1.15,
-            },
+            { x: () => num(p, 'mx') * W() - box(p).cx, y: () => num(p, 'my') * H() - box(p).cy, rotation: num(p, 'mr'), scale: 1.12 },
             { x: 0, y: () => -box(slot).h * 0.95, rotation: 0, scale: 1, duration: 1 },
             t,
           );
@@ -176,48 +166,61 @@ export function DeskStage() {
       const copy = all('[data-hero-copy] > *');
       tl.fromTo(copy, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.45, stagger: 0.1, ease: 'power2.out' }, 2.0);
 
-      // ---------- Phase B: one folder opens, the toolkit spills out ----------
+      // ---------- Phase B: the Toolkit file lifts, fills the screen and opens into slide 2 ----------
       const B = PHASE_B;
-      tl.to(copy, { opacity: 0, y: -40, duration: 0.35, stagger: 0.05, ease: 'power2.in' }, B);
-      tl.to(all('[data-note]'), { yPercent: -70, opacity: 0, duration: 0.4, stagger: 0.04, ease: 'power2.in' }, B);
-
-      // The mug slides down out of the toolkit's way
-      const mug = world.querySelector('[data-mug]');
-      if (mug) tl.to(mug, { y: () => H() * 0.26, x: () => W() * 0.025, rotation: 8, duration: 0.8 }, B + 0.2);
-
       const tkSlot = world.querySelector<HTMLElement>('[data-toolkit-slot]')!;
+      tl.to(copy, { opacity: 0, y: -40, duration: 0.35, stagger: 0.05, ease: 'power2.in' }, B);
+      tl.to(all('[data-note]'), { y: -60, opacity: 0, duration: 0.4, stagger: 0.04, ease: 'power2.in' }, B);
       const others = slots.filter((sl) => sl !== tkSlot).flatMap((sl) => all('[data-folder-part], [data-paper]', sl));
-      tl.to(others, { yPercent: 45, opacity: 0, duration: 0.5, stagger: 0.015, ease: 'power2.in' }, B);
+      tl.to(others, { yPercent: 40, opacity: 0, duration: 0.5, stagger: 0.012, ease: 'power2.in' }, B);
 
-      const tkBack = tkSlot.querySelector('[data-back]')!;
-      const tkFront = tkSlot.querySelector<HTMLElement>('[data-front]')!;
-      const tkPapers = all('[data-paper]', tkSlot);
-      const tkShadow = tkSlot.querySelector('[data-lift]')!;
-      const group = [tkBack, tkFront, tkShadow, ...tkPapers];
-      const toCenterX = () => TOOLKIT_CENTER.x * W() - box(tkSlot).cx;
-      const toCenterY = () => TOOLKIT_CENTER.y * H() - box(tkSlot).cy;
+      // Swap the real folder for an identical single-piece copy that can scale as one unit
+      const realTk = all('[data-folder-part], [data-paper]', tkSlot);
+      const zFront = zoom.querySelector('[data-zfront]');
+      const zPapers = all('[data-zpaper]', zoom);
+      const startScale = () => box(tkSlot).w / zw;
+      tl.set(zoom, { xPercent: -50, yPercent: -50 }, 0);
+      tl.fromTo(zoom, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, B + 0.3);
+      tl.to(realTk, { autoAlpha: 0, duration: 0.01 }, B + 0.3);
+      // the sheets tuck down into the pocket before the folder comes forward
+      tl.to(zPapers, { yPercent: 28, duration: 0.3, ease: 'power2.in' }, B + 0.35);
+      tl.to(zPapers, { opacity: 0, duration: 0.01 }, B + 0.65);
+      // lift
+      tl.fromTo(
+        zoom,
+        { x: () => box(tkSlot).cx, y: () => box(tkSlot).cy, scale: startScale },
+        { x: () => box(tkSlot).cx, y: () => box(tkSlot).cy - 16, scale: () => startScale() * 1.06, duration: 0.3, ease: 'power2.out' },
+        B + 0.3,
+      );
+      // come forward until the folder fills the screen (back face centered on the viewport)
+      tl.to(
+        zoom,
+        { x: () => W() / 2, y: () => H() / 2 - zw * FOLDER_H * (BACK_TOP / 2), scale: 1, duration: 1, ease: 'power3.inOut' },
+        B + 0.6,
+      );
+      // the front pocket swings open toward the viewer, the sheets slide out of view
+      tl.to(zFront, { rotationX: -178, duration: 0.7, ease: 'power2.inOut' }, B + 0.85);
 
-      tl.to(group, { y: -18, duration: 0.3, ease: 'power2.out' }, B + 0.1);
-      tl.to(tkShadow, { opacity: 1, duration: 0.3, ease: 'power1.out' }, B + 0.1);
-      tl.to(group, { x: toCenterX, y: () => toCenterY() - 18, duration: 0.6 }, B + 0.35);
-      tl.set(tkFront, { transformOrigin: '50% 100%', transformPerspective: 1000 }, B + 0.94);
-      tl.to(tkFront, { rotationX: -172, duration: 0.55, ease: 'power2.inOut' }, B + 0.95);
-      tl.to(tkPapers, { yPercent: -25, opacity: 0, duration: 0.35, ease: 'power1.in' }, B + 1.2);
 
-      // Tool cards pop out of the open folder to their grouped places
-      const fx = () => TOOLKIT_CENTER.x * W();
-      const fy = () => TOOLKIT_CENTER.y * H() - 18;
-      all('[data-card]').forEach((card, i) => {
+      // ---------- Slide 2: the toolkit index draws itself on the inside of the folder ----------
+      const T = B + 1.5;
+      const layer = world.querySelector('[data-tk-layer]');
+      tl.fromTo(layer, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, T - 0.05);
+      tl.fromTo(all('[data-tk-head]'), { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.06, ease: 'power3.out' }, T);
+      tl.fromTo(all('[data-rule]'), { scaleX: 0 }, { scaleX: 1, duration: 0.5, stagger: 0.035, ease: 'power2.out' }, T + 0.1);
+      tl.fromTo(all('[data-row] > button'), { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.45, stagger: 0.035, ease: 'power3.out' }, T + 0.15);
+      const countEl = world.querySelector('[data-tk-count]');
+      if (countEl) {
+        const total = Number((countEl as HTMLElement).dataset.total);
+        const c = { v: 0 };
         tl.fromTo(
-          card,
-          { x: () => fx() - box(card).cx, y: () => fy() - box(card).cy, scale: 0.3, opacity: 0, rotation: cardSpin(i) },
-          { x: 0, y: 0, scale: 1, opacity: 1, rotation: num(card, 'tilt'), duration: 0.6, ease: 'back.out(1.5)' },
-          B + 1.2 + i * 0.05,
+          c,
+          { v: 0 },
+          { v: total, duration: 0.6, ease: 'none', onUpdate: () => (countEl.textContent = pad(Math.round(c.v))) },
+          T + 0.15,
         );
-      });
-      tl.fromTo(all('[data-tk-head]'), { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.08, ease: 'power2.out' }, B + 1.35);
-      tl.to([tkBack, tkFront, tkShadow], { yPercent: 25, opacity: 0, duration: 0.45, ease: 'power2.in' }, B + 2.0);
-      tl.to({}, { duration: 0.4 }, B + 2.4); // hold the finished toolkit
+      }
+      tl.to({}, { duration: 0.5 }, T + 0.9); // hold the finished slide
     }, stage);
 
     return () => {
@@ -226,7 +229,7 @@ export function DeskStage() {
     };
   }, [isMobile, motion]);
 
-  // --- mouse parallax (one CSS variable write per frame) ---------------------
+  // --- subtle mouse parallax on the messy desk (one CSS variable write per frame) ---
   useLayoutEffect(() => {
     const world = worldRef.current;
     if (!world || !motion || !window.matchMedia('(hover: hover)').matches) return;
@@ -264,33 +267,8 @@ export function DeskStage() {
         <div ref={worldRef} className={s.world} data-desk-world>
           <div className={s.desk} aria-hidden="true" />
 
-          <div className={s.laptop} style={{ '--d': 3 } as Vars} aria-hidden="true">
-            <div className={s.par}>
-              <Laptop />
-            </div>
-          </div>
-
-          {!isMobile && (
-            <div className={s.mug} data-mug style={{ '--d': 5 } as Vars} role="img" aria-label="A cup of coffee, still steaming">
-              <div className={s.par}>
-                <Mug />
-                <div className={s.steam}>
-                  <Steam />
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className={s.pen} data-pen style={{ '--d': pen.depth } as Vars} aria-hidden="true">
-            <div className={s.par}>
-              <div className={s.float} style={{ '--fd': '7s', '--fdl': '-2s' } as Vars}>
-                <Pen />
-              </div>
-            </div>
-          </div>
-
-          {/* Sticky notes: tidy state is a row along the top edge */}
-          <ul className={s.notes} aria-label="Sticky notes">
+          {/* Index tags: tidy state is a row along the top edge */}
+          <ul className={s.notes} aria-label="Notes">
             {noteList.map((n, i) => (
               <li
                 key={i}
@@ -299,13 +277,13 @@ export function DeskStage() {
                 data-mx={n.messy.x}
                 data-my={n.messy.y}
                 data-mr={n.messy.r}
-                data-tr={n.tidyR}
-                style={{ '--d': n.depth, zIndex: 54 + i, rotate: motion ? undefined : `${n.tidyR}deg` } as Vars}
+                style={{ '--d': n.depth, zIndex: 54 + i } as Vars}
               >
-                <div className={s.peel}>
-                  <div className={s.par}>
-                    <div className={s.float} style={{ '--fd': `${5 + i}s`, '--fdl': `${-i * 1.3}s` } as Vars}>
-                      <div className={s.noteFace}>{hero.notes[notes.indexOf(n)]}</div>
+                <div className={s.par}>
+                  <div className={s.float} style={{ '--fd': `${5 + i}s`, '--fdl': `${-i * 1.3}s` } as Vars}>
+                    <div className={s.noteFace}>
+                      <span className={s.noteNum}>{pad(notes.indexOf(n) + 1)}</span>
+                      {hero.notes[notes.indexOf(n)]}
                     </div>
                   </div>
                 </div>
@@ -330,12 +308,11 @@ export function DeskStage() {
                   data-mr={f.messy.r}
                   aria-label={`Folder: ${hero.folders[f.i]}`}
                 >
-                  {isTk && <div className={s.lift} data-lift style={{ zIndex: zBase(order) - 1 }} aria-hidden="true" />}
-                  <div className={s.back} data-folder-part data-back style={{ ...fvars, zIndex: zBase(order) }} aria-hidden="true">
+                  <div className={s.back} data-folder-part style={{ ...fvars, zIndex: zBase(order) }} aria-hidden="true">
                     <div className={s.par}>
                       <div className={s.float}>
                         <div className={s.backFace}>
-                          <span className={s.tab}>{String(f.i + 1).padStart(2, '0')}</span>
+                          <span className={s.tab}>{pad(f.i + 1)}</span>
                         </div>
                       </div>
                     </div>
@@ -355,7 +332,7 @@ export function DeskStage() {
                         data-z={zBase(order) + 1}
                         style={{ '--d': p.depth, '--fd': `${5 + (p.depth % 4)}s`, '--fdl': `${-p.depth * 0.6}s`, zIndex: motion ? 40 + papers.indexOf(p) : zBase(order) + 1 } as Vars}
                         role="img"
-                        aria-label={`A sheet with a ${p.kind === 'erd' ? 'entity-relationship diagram' : p.kind + ' sketch'}`}
+                        aria-label={`A sheet with a ${p.kind === 'erd' ? 'entity-relationship diagram' : p.kind + ' chart'}`}
                       >
                         <div className={s.par}>
                           <div className={s.float}>
@@ -367,14 +344,13 @@ export function DeskStage() {
                       </div>
                     ))}
 
-                  <div className={s.front} data-folder-part data-front style={{ ...fvars, zIndex: zBase(order) + 2 }} aria-hidden="true">
+                  <div className={s.front} data-folder-part style={{ ...fvars, zIndex: zBase(order) + 2 }} aria-hidden="true">
                     <div className={s.par}>
                       <div className={s.float}>
                         <div className={s.frontFace}>
                           <span className={s.fNum}>{String(f.i + 1).padStart(3, '0')}.</span>
                           <span className={s.fLabel}>{hero.folders[f.i]}</span>
                         </div>
-                        <div className={s.frontInside} />
                       </div>
                     </div>
                   </div>
@@ -410,6 +386,29 @@ export function DeskStage() {
             <p className={`mono-label ${s.hint}`} data-hint aria-hidden="true">
               <span className={s.hintDot} /> {hero.scrollHint}
             </p>
+          )}
+
+          {/* The Toolkit folder as one piece, so it can grow to fill the screen and open */}
+          {motion && (
+            <div className={s.zoom} data-zoom aria-hidden="true">
+              <div className={s.backFace}>
+                <span className={s.tab}>{pad(TOOLKIT_FOLDER + 1)}</span>
+              </div>
+              {tkPapers.map((p) => (
+                <div key={p.kind} className={`${s.paper} ${p.slot ? s.paperB : ''}`} data-zpaper>
+                  <div className={s.sheet}>
+                    <Doodle kind={p.kind} />
+                  </div>
+                </div>
+              ))}
+              <div className={s.zFront} data-zfront>
+                <div className={s.frontFace}>
+                  <span className={s.fNum}>{String(TOOLKIT_FOLDER + 1).padStart(3, '0')}.</span>
+                  <span className={s.fLabel}>{hero.folders[TOOLKIT_FOLDER]}</span>
+                </div>
+                <div className={s.frontInside} />
+              </div>
+            </div>
           )}
 
           {motion && <ToolkitLayer />}

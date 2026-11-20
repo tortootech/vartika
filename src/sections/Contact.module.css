@@ -1,0 +1,111 @@
+.section { z-index: 5; display: flex; flex-direction: column; }
+.inner { padding: calc(var(--bar-h) + 10vh) var(--gutter) 0; flex: 1; }
+.head { color: var(--cream-soft); }
+
+.faq { margin-top: 34px; border-top: 1px solid var(--line-on-navy); max-width: 1200px; }
+.faq li { border-bottom: 1px solid var(--line-on-navy); }
+.faq summary {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 4.6em 1fr 28px;
+  align-items: baseline;
+  gap: 12px;
+  padding: clamp(18px, 2.6vh, 30px) 0;
+  cursor: pointer;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary:focus-visible { outline-color: var(--cream); }
+.n { font: 500 13px/1 var(--font-mono); color: var(--cream-soft); }
+.q { font: 400 clamp(26px, 3.4vw, 54px)/1.08 var(--font-display); letter-spacing: -0.025em; transition: transform 0.4s var(--ease-out); }
+.faq summary:hover .q { transform: translateX(8px); }
+.faq details[open] .q { font-style: italic; }
+.plus { position: relative; width: 22px; height: 22px; align-self: center; }
+.plus::before, .plus::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 1.5px;
+  background: currentColor;
+  transition: transform 0.4s var(--ease-out);
+}
+.plus::after { transform: rotate(90deg); }
+details[open] .plus::after { transform: rotate(0); }
+.a {
+  padding: 0 28px clamp(22px, 3vh, 34px) calc(4.6em + 12px);
+  max-width: calc(60ch + 6em);
+  font-size: clamp(16px, 1.2vw, 19px);
+  line-height: 1.6;
+  color: var(--cream-soft);
+  animation: fadeUp 0.5s var(--ease-out);
+}
+@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } }
+
+.links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: clamp(36px, 6vh, 64px); }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 22px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--cream) 45%, transparent);
+  font: 600 15px/1 var(--font-body);
+  text-decoration: none;
+  transition: background-color 0.3s, color 0.3s, transform 0.35s var(--ease-out);
+}
+a.btn:hover { background: var(--cream); color: var(--navy); transform: translateY(-2px); }
+a.btn:focus-visible { outline-color: var(--cream); }
+.pending { opacity: 0.7; cursor: not-allowed; }
+.todo { font: 500 10px/1 var(--font-mono); border: 1px dashed currentColor; padding: 3px 5px; border-radius: 4px; }
+
+/* ---------- giant closing line ---------- */
+.closing {
+  position: relative;
+  display: block;
+  margin: clamp(48px, 10vh, 120px) 0 0;
+  padding: 0 calc(var(--gutter) * 0.5);
+  font: 800 clamp(72px, 19.5vw, 420px)/0.86 var(--font-display);
+  letter-spacing: -0.035em;
+  white-space: nowrap;
+  text-decoration: none;
+  color: var(--navy);
+  -webkit-text-stroke: max(1.5px, 0.12vw) var(--cream);
+}
+.base { display: inline-block; }
+.chWrap { display: inline-block; overflow: hidden; padding-bottom: 0.06em; margin-bottom: -0.06em; }
+.ch { display: inline-block; }
+.fill {
+  position: absolute;
+  inset: 0 calc(var(--gutter) * 0.5);
+  color: var(--cream);
+  -webkit-text-stroke: 0;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.9s var(--ease-out);
+  pointer-events: none;
+}
+.closing:hover .fill,
+.closing:focus-visible .fill { clip-path: inset(0 0 0 0); }
+.closing:focus-visible { outline-color: var(--cream); outline-offset: -4px; }
+
+.foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 28px var(--gutter) 30px calc(var(--gutter) + 130px);
+  border-top: 1px solid var(--line-on-navy);
+  font-size: 14px;
+  color: var(--cream-soft);
+}
+.top { font: 600 14px/1 var(--font-body); color: var(--cream); padding: 8px 0; }
+.top:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+@media (max-width: 767px) {
+  .inner { padding: calc(var(--bar-h) + 40px) 16px 0; }
+  .faq summary { grid-template-columns: 3.4em 1fr 22px; }
+  .a { padding-left: calc(3.4em + 12px); padding-right: 0; }
+  .btn { padding: 13px 18px; font-size: 14px; }
+  .foot { padding: 24px 16px 64px; } /* room for the counter */
+}

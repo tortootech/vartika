@@ -1,0 +1,34 @@
+.hud { position: fixed; inset: 0; z-index: 89; pointer-events: none; }
+.counter {
+  position: absolute;
+  left: var(--gutter);
+  bottom: 22px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  transition: background-color 0.4s, color 0.4s;
+}
+.num { display: inline-block; animation: tick 0.5s var(--ease-out); }
+@keyframes tick { from { opacity: 0; transform: translateY(70%); } }
+.track {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: color-mix(in srgb, currentColor 14%, transparent);
+}
+.bar {
+  height: 100%;
+  background: currentColor;
+  transform-origin: top;
+  transform: scaleY(0);
+}
+.desk { color: var(--navy); }
+.desk .counter { background: var(--navy); color: var(--cream); }
+.cream { color: var(--navy); }
+.cream .counter { background: var(--cream); color: var(--navy); box-shadow: 0 0 0 1px var(--line-on-cream); }
+.navy { color: var(--cream); }
+.navy .counter { background: var(--navy); color: var(--cream); box-shadow: 0 0 0 1px var(--line-on-navy); }
+@media (max-width: 767px) {
+  .counter { bottom: 12px; left: 12px; padding: 6px 9px; font-size: 10px; }
+}

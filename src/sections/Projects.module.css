@@ -1,0 +1,119 @@
+.section { height: 100vh; min-height: 0; z-index: 2; }
+.inner { height: 100%; }
+.track {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: clamp(28px, 3.2vw, 56px);
+  padding: calc(var(--bar-h) + 2vh) var(--gutter) 4vh;
+  width: max-content;
+}
+.intro { width: min(34vw, 520px); flex: none; }
+.title { font-size: clamp(56px, 8vw, 150px); margin: 22px 0 26px; }
+.sub { font-size: clamp(16px, 1.2vw, 19px); max-width: 32ch; color: var(--ink-soft); }
+.hint { margin-top: 28px; color: var(--ink-soft); }
+
+/* ---------- a case file: back panel + peeking sheet + front panel ---------- */
+.card {
+  --c-back: color-mix(in srgb, var(--slate) 58%, var(--cream));
+  --c-front: color-mix(in srgb, var(--slate) 26%, var(--cream));
+  position: relative;
+  flex: none;
+  width: clamp(340px, 34vw, 600px);
+  height: min(70vh, 640px);
+  isolation: isolate;
+}
+.back {
+  position: absolute;
+  inset: 0;
+  top: 7%;
+  background: var(--c-back);
+  border-radius: 6px 14px 14px 14px;
+  box-shadow: var(--shadow-2);
+}
+.tab {
+  position: absolute;
+  bottom: calc(100% - 1px);
+  left: 0;
+  padding: 10px 18px 8px;
+  border-radius: 12px 14px 0 0;
+  background: var(--c-back);
+  color: var(--navy);
+  font: 500 12px/1 var(--font-mono);
+  letter-spacing: 0.08em;
+}
+.peek {
+  position: absolute;
+  right: 9%;
+  top: 2%;
+  width: 34%;
+  aspect-ratio: 100 / 128;
+  background: var(--cream);
+  border-radius: 2px;
+  box-shadow: var(--shadow-1);
+  rotate: 4deg;
+  transition: translate 0.5s var(--ease-out), rotate 0.5s var(--ease-out);
+}
+.front {
+  position: absolute;
+  inset: 22% 0 0;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(20px, 2.2vw, 36px);
+  background: var(--c-front);
+  border-radius: 10px 10px 14px 14px;
+  box-shadow: 0 -10px 24px color-mix(in srgb, var(--navy) 10%, transparent);
+  transition: translate 0.5s var(--ease-out);
+}
+.card:hover .peek, .card:focus-within .peek { translate: 0 -14%; rotate: 1deg; }
+.card:hover .front, .card:focus-within .front { translate: 0 4px; }
+.meta { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; color: var(--ink-soft); }
+.num { font: 300 clamp(36px, 3.6vw, 60px)/1 var(--font-display); color: var(--navy); letter-spacing: -0.04em; }
+.cardTitle { font-size: clamp(38px, 3.8vw, 68px); margin: auto 0 14px; }
+.cardTitle strong, .cardTitle { font-weight: 700; }
+.open { text-align: left; letter-spacing: inherit; line-height: inherit; }
+.open::after { content: ''; position: absolute; inset: 0; z-index: 2; border-radius: 14px; }
+.open:focus-visible { outline: none; }
+.open:focus-visible::after { outline: 2px solid var(--navy); outline-offset: 4px; }
+.summary { font-size: clamp(14px, 1vw, 16px); line-height: 1.55; color: var(--navy); max-width: 46ch; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 18px; }
+.tags li {
+  font: 500 11px/1 var(--font-mono);
+  padding: 7px 10px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--navy) 30%, transparent);
+}
+.more {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  font: 600 14px/1 var(--font-body);
+}
+.more svg { transition: transform 0.35s var(--ease-out); }
+.card:hover .more svg { transform: translateX(5px); }
+.tail { width: 2vw; flex: none; }
+
+@media (max-width: 767px) {
+  .section { height: auto; min-height: 100vh; }
+  .track {
+    width: auto;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 40px;
+    padding: calc(var(--bar-h) + 40px) 16px 80px;
+  }
+  .intro { width: auto; }
+  .title { font-size: 60px; }
+  .card { width: 100%; height: auto; padding-top: 30%; }
+  .front { position: relative; inset: auto; min-height: 340px; }
+  .back { top: 4%; }
+  .peek { width: 30%; top: 0; }
+  .cardTitle { margin-top: 40px; }
+  .tail { display: none; }
+}
+@media (prefers-reduced-motion: reduce) and (min-width: 768px) {
+  .section { height: auto; }
+  .track { width: auto; flex-wrap: wrap; padding-top: calc(var(--bar-h) + 6vh); padding-bottom: 10vh; row-gap: 80px; }
+  .intro { width: 100%; }
+}

@@ -1,0 +1,74 @@
+.bar {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 90;
+  height: var(--bar-h);
+  padding: 0 var(--gutter);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+  transition: color 0.4s;
+}
+.bar > * { pointer-events: auto; }
+.brand {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 8px;
+  text-decoration: none;
+}
+.name {
+  font: 800 20px/1 var(--font-display);
+  letter-spacing: -0.01em;
+}
+.year {
+  font: 500 11px/1 var(--font-mono);
+  padding: 4px 6px;
+  border-radius: 999px;
+  transition: background-color 0.4s, color 0.4s;
+}
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 18px;
+  border-radius: 999px;
+  font: 600 14px/1 var(--font-body);
+  text-decoration: none;
+  /* slate fill + cream text, deepened toward navy so the label stays ≥4.5:1 */
+  background: var(--slate-deep);
+  color: var(--cream);
+  transition: background-color 0.35s, transform 0.35s var(--ease-out);
+}
+.pill:hover { transform: translateY(-1px); background: var(--navy); }
+.pillDot { width: 7px; height: 7px; border-radius: 50%; background: var(--cream); }
+
+/* themes follow the section under the bar */
+.desk, .cream { color: var(--navy); }
+.navy { color: var(--cream); }
+.desk .year { background: var(--navy); color: var(--cream); }
+.cream .year { color: var(--navy); }
+.navy .year { color: var(--cream); }
+.desk .pill { background: var(--navy); }
+.desk .pill:hover { background: var(--slate-deep); }
+.navy .pill:hover { background: var(--cream); color: var(--navy); }
+.navy .pill:hover .pillDot { background: var(--navy); }
+.desk .brand:focus-visible, .cream .brand:focus-visible { outline-color: var(--navy); }
+
+@media (max-width: 767px) {
+  .name { font-size: 18px; }
+  .pill { padding: 10px 15px; font-size: 13px; }
+}
+
+/* soft fade behind the bar so scrolled text never collides with it (not on the desk) */
+.bar::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 -18px;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+}
+.cream::before { background: linear-gradient(var(--cream) 55%, transparent); opacity: 1; }
+.navy::before { background: linear-gradient(var(--navy) 55%, transparent); opacity: 1; }

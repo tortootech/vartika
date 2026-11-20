@@ -1,0 +1,122 @@
+@import 'lenis/dist/lenis.css';
+
+:root {
+  /* ---- the only three colors ---- */
+  --navy: #142841;
+  --slate: #798da6;
+  --cream: #e5ded2;
+
+  /* ---- derived (color-mix only) ---- */
+  --slate-deep: color-mix(in srgb, var(--slate) 60%, var(--navy)); /* cream on this ≈ 4.5:1 */
+  --navy-2: color-mix(in srgb, var(--navy) 88%, var(--slate));
+  --navy-3: color-mix(in srgb, var(--navy) 78%, var(--slate));
+  --cream-2: color-mix(in srgb, var(--cream) 82%, var(--slate));
+  --cream-3: color-mix(in srgb, var(--cream) 62%, var(--slate));
+  --ink-soft: color-mix(in srgb, var(--navy) 72%, var(--cream)); /* secondary text on cream, ≈5.2:1 */
+  --cream-soft: color-mix(in srgb, var(--cream) 75%, var(--navy)); /* secondary text on navy, ≈6.7:1 */
+  --line-on-cream: color-mix(in srgb, var(--navy) 18%, transparent);
+  --line-on-navy: color-mix(in srgb, var(--cream) 18%, transparent);
+  --shadow-1: 0 1px 2px color-mix(in srgb, var(--navy) 22%, transparent),
+    0 6px 14px color-mix(in srgb, var(--navy) 16%, transparent);
+  --shadow-2: 0 2px 4px color-mix(in srgb, var(--navy) 20%, transparent),
+    0 18px 40px color-mix(in srgb, var(--navy) 26%, transparent);
+
+  --font-display: 'Fraunces', 'Times New Roman', serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --gutter: clamp(16px, 4.5vw, 72px);
+  --bar-h: 64px;
+  --ease-out: cubic-bezier(0.2, 0.75, 0.2, 1);
+
+  color-scheme: light;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  background: var(--navy);
+  -webkit-text-size-adjust: 100%;
+}
+html.is-locked, html.is-locked body { overflow: hidden; }
+
+body {
+  margin: 0;
+  background: var(--cream);
+  color: var(--navy);
+  font: 400 16px/1.6 var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
+}
+
+h1, h2, h3, h4, p, ol, ul, figure { margin: 0; }
+ol, ul { padding: 0; list-style: none; }
+a { color: inherit; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+img, svg { display: block; max-width: 100%; }
+
+::selection { background: var(--navy); color: var(--cream); }
+
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+
+.skip-link {
+  position: fixed; left: 12px; top: 12px; z-index: 200;
+  padding: 10px 16px; border-radius: 999px;
+  background: var(--navy); color: var(--cream);
+  font: 600 14px var(--font-body); text-decoration: none;
+  transform: translateY(-160%); transition: transform .3s var(--ease-out);
+}
+.skip-link:focus-visible { transform: none; outline-color: var(--cream); }
+
+/* custom cursor hides the native one only on fine pointers */
+@media (hover: hover) and (pointer: fine) {
+  html.has-cursor, html.has-cursor * { cursor: none !important; }
+}
+
+/* shared editorial type */
+.display {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-weight: 300;
+  letter-spacing: -0.035em;
+  line-height: 0.92;
+}
+.display em { font-style: italic; font-weight: 300; }
+.display strong { font-weight: 800; }
+.mono-label {
+  font: 500 12px/1 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* paper-sheet sections (3–6) */
+.sheet {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  border-radius: clamp(18px, 2.6vw, 40px) clamp(18px, 2.6vw, 40px) 0 0;
+  margin-top: calc(clamp(18px, 2.6vw, 40px) * -1);
+  box-shadow: 0 -20px 50px color-mix(in srgb, var(--navy) 22%, transparent);
+  overflow: clip;
+}
+.sheet--cream { background: var(--cream); color: var(--navy); }
+.sheet--navy { background: var(--navy); color: var(--cream); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}

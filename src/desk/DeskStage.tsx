@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, type CSSProperties } from 'react';
 import { hero } from '../content';
-import { ScrollTrigger, getLenis, gsap, isTouch, prefersReducedMotion, scrollToTarget } from '../lib/scroll';
+import { ScrollTrigger, getLenis, gsap, isTouch, prefersReducedMotion, scrollToTarget, setWheelGate } from '../lib/scroll';
 import { setSection } from '../lib/store';
 import { useMedia } from '../lib/useMedia';
 import { Doodle, type DoodleKind } from './Doodles';
@@ -117,7 +117,6 @@ export function DeskStage() {
           end: () => `+=${Math.round(window.innerHeight * (isMobile ? 4.0 : 4.4))}`,
           pin: true,
           scrub: 0.8,
-          anticipatePin: 1,
           onUpdate: (self) => {
             const t = self.progress * tl.duration();
             theme = t > PHASE_B + 1.2 ? 'navy' : 'desk';
@@ -229,22 +228,40 @@ export function DeskStage() {
       if (lenis && st && !isTouch) {
         let gliding = false;
         const stopsY = () => stopTimes.map((tm) => st.start + (tm / tl.duration()) * (st.end - st.start));
-        // react only to real wheel / trackpad input, never to programmatic or layout-driven scrolls
-        const onInput = ({ deltaY }: { deltaY: number }) => {
-          if (gliding || Math.abs(deltaY) < 1) return;
+        // One swipe = one step. A trackpad keeps firing wheel events (momentum) for a second or more
+        // after the fingers lift; those belong to the same gesture and are swallowed, so the tidy desk
+        // is never skipped. A new gesture starts after a short quiet gap.
+        const GAP = 240; // ms of silence that ends a gesture
+        let lastInput = 0;
+        let stepped = false; // this gesture already moved one step
+        setWheelGate(({ deltaY, event }) => {
+          if (event.type !== 'wheel') return true; // touch scrolls naturally
+          const now = performance.now();
+          if (now - lastInput > GAP) stepped = false; // fresh gesture
+          lastInput = now;
+          if (Math.abs(deltaY) < 1) return true;
           const y = lenis.scroll;
           const ys = stopsY();
           const first = ys[0];
           const last = ys[ys.length - 1];
           const down = deltaY > 0;
-          if (down ? y < first - 1 || y >= last - 1 : y <= first + 1 || y > last + 1) return; // outside: free scrolling
+          const inside = down ? y >= first - 1 && y < last - 1 : y > first + 1 && y <= last + 1;
+          if (!inside && !gliding) return true; // outside the desk: free scrolling
+          event.preventDefault();
+          if (gliding || stepped) return false; // momentum / extra input of a gesture that already stepped
           const target = down ? ys.find((s) => s > y + 1) : [...ys].reverse().find((s) => s < y - 1);
-          if (target === undefined) return;
+          if (target === undefined) return true;
           gliding = true;
-          lenis.scrollTo(target, { duration: 1.2, easing: (k: number) => 1 - Math.pow(1 - k, 3), lock: true, force: true, onComplete: () => (gliding = false) });
-        };
-        lenis.on('virtual-scroll', onInput);
-        cleanups.push(() => lenis.off('virtual-scroll', onInput));
+          stepped = true;
+          lenis.scrollTo(target, {
+            duration: 1.7,
+            easing: (k: number) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2), // ease in-out, so the tidy-up reads clearly
+            force: true,
+            onComplete: () => (gliding = false),
+          });
+          return false;
+        });
+        cleanups.push(() => setWheelGate(null));
       }
     }, stage);
 

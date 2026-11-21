@@ -79,12 +79,15 @@ a.btn:focus-visible { outline-color: var(--cream); }
   position: absolute;
   inset: 0 calc(var(--gutter) * 0.5);
   color: var(--cream);
-  clip-path: inset(0 100% 0 0);
-  transition: clip-path 0.9s var(--ease-out);
+  clip-path: inset(0 100% 0 0); /* GSAP scrubs this open with the scroll */
   pointer-events: none;
 }
-.closing:hover .fill,
-.closing:focus-visible .fill { clip-path: inset(0 0 0 0); }
+/* reduced motion: no scroll scrub, so fill on hover/focus instead */
+@media (prefers-reduced-motion: reduce) {
+  .fill { transition: clip-path 0.9s var(--ease-out); }
+  .closing:hover .fill,
+  .closing:focus-visible .fill { clip-path: inset(0 0 0 0); }
+}
 .closing:focus-visible { outline-color: var(--cream); outline-offset: -4px; }
 
 .foot {

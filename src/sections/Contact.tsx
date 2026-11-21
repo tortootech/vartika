@@ -16,6 +16,14 @@ export function Contact() {
     const ctx = gsap.context(() => {
       if (prefersReducedMotion) return;
       gsap.from('[data-faq] > li', { y: 40, opacity: 0, duration: 0.8, stagger: 0.08, ease: 'power3.out', scrollTrigger: { trigger: '[data-faq]', start: 'top 78%', toggleActions: 'play none none reverse' } });
+      // the line holds in view while cream paint sweeps across it left → right with the scroll
+      // (pinSpacing must be explicit: GSAP turns it off when the parent is a flex container)
+      gsap
+        .timeline({
+          scrollTrigger: { trigger: '[data-closing]', start: 'center 55%', end: '+=70%', pin: true, pinSpacing: true, scrub: 0.6, invalidateOnRefresh: true },
+        })
+        .fromTo('[data-fill]', { clipPath: 'inset(0% 100% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', ease: 'none', duration: 1 })
+        .to({}, { duration: 0.5 }); // finish painting with room to spare before the page ends
       gsap.from('[data-closing] [data-ch]', {
         yPercent: 110,
         duration: 1,
@@ -109,7 +117,7 @@ export function Contact() {
             </span>
           ))}
         </span>
-        <span className={s.fill} aria-hidden="true">
+        <span className={s.fill} data-fill aria-hidden="true">
           {chars.map((c, i) => (
             <span key={i} className={s.chWrap}>
               <span className={s.ch}>{c === ' ' ? '\u00a0' : c}</span>

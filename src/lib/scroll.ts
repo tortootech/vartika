@@ -3,6 +3,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 
 gsap.registerPlugin(ScrollTrigger);
+// dev only: lets the browser console inspect triggers
+if (import.meta.env.DEV) (window as unknown as { __ST: typeof ScrollTrigger }).__ST = ScrollTrigger;
 
 export const prefersReducedMotion =
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -11,6 +13,13 @@ export const isTouch =
   typeof window !== 'undefined' && window.matchMedia('(hover: none), (pointer: coarse)').matches;
 
 let lenis: Lenis | null = null;
+
+/** Optional gate on wheel/touch input; return false to swallow an event (used by the desk's stepped scroll). */
+export type WheelGate = (d: { deltaY: number; event: WheelEvent | TouchEvent }) => boolean;
+let wheelGate: WheelGate | null = null;
+export const setWheelGate = (gate: WheelGate | null) => {
+  wheelGate = gate;
+};
 const progressListeners = new Set<(p: number) => void>();
 
 function emitProgress() {
@@ -29,7 +38,12 @@ export function initSmoothScroll(): () => void {
     return () => window.removeEventListener('scroll', emitProgress);
   }
 
-  lenis = new Lenis({ duration: 1.15, easing: (t) => 1 - Math.pow(1 - t, 4), autoRaf: false });
+  lenis = new Lenis({
+    duration: 1.15,
+    easing: (t) => 1 - Math.pow(1 - t, 4),
+    autoRaf: false,
+    virtualScroll: (d) => (wheelGate ? wheelGate(d) : true),
+  });
   lenis.on('scroll', ScrollTrigger.update);
   lenis.on('scroll', emitProgress);
   const tick = (time: number) => lenis?.raf(time * 1000);

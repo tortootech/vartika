@@ -5,7 +5,6 @@ import { HUD } from './components/HUD';
 import { Intro } from './components/Intro';
 import { TopBar } from './components/TopBar';
 import { DeskStage } from './desk/DeskStage';
-import { initSmoothScroll } from './lib/scroll';
 
 /** Sections 3–6 live in their own chunk and mount after first paint. */
 const Rest = lazy(() => import('./sections/Rest'));
@@ -19,8 +18,6 @@ export default function App() {
     const id = window.setTimeout(() => void import('./sections/Rest'), 1200);
     return () => window.clearTimeout(id);
   }, []);
-
-  useEffect(() => initSmoothScroll(), []);
 
   return (
     <>

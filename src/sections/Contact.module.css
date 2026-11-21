@@ -69,8 +69,8 @@ a.btn:focus-visible { outline-color: var(--cream); }
   letter-spacing: -0.035em;
   white-space: nowrap;
   text-decoration: none;
-  color: var(--navy);
-  -webkit-text-stroke: max(1.5px, 0.12vw) var(--cream);
+  /* solid, quiet tone first (no outline: Inter's overlapping contours show through a stroke) */
+  color: color-mix(in srgb, var(--cream) 16%, var(--navy));
 }
 .base { display: inline-block; }
 .chWrap { display: inline-block; overflow: hidden; padding-bottom: 0.06em; margin-bottom: -0.06em; }
@@ -79,7 +79,6 @@ a.btn:focus-visible { outline-color: var(--cream); }
   position: absolute;
   inset: 0 calc(var(--gutter) * 0.5);
   color: var(--cream);
-  -webkit-text-stroke: 0;
   clip-path: inset(0 100% 0 0);
   transition: clip-path 0.9s var(--ease-out);
   pointer-events: none;

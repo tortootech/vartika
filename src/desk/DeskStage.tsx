@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, type CSSProperties } from 'react';
 import { hero } from '../content';
-import { ScrollTrigger, gsap, prefersReducedMotion, scrollToTarget } from '../lib/scroll';
+import { ScrollTrigger, getLenis, gsap, isTouch, prefersReducedMotion, scrollToTarget } from '../lib/scroll';
 import { setSection } from '../lib/store';
 import { useMedia } from '../lib/useMedia';
 import { Doodle, type DoodleKind } from './Doodles';
@@ -40,7 +40,9 @@ const num = (el: HTMLElement, key: string) => Number(el.dataset[key] ?? 0);
 const pad = (n: number) => String(n).padStart(2, '0');
 
 /** Phase boundary: before this time the counter reads 01, after it 02. */
-const PHASE_B = 1.7;
+const PHASE_B = 2.5;
+/** Timeline times the scroll comes to rest on: one scroll = one step. */
+const STOP_TIDY = 1.75;
 /** Folder proportions: height = width × FOLDER_H. The back face starts BACK_TOP down (above it is the tab). */
 const FOLDER_H = 1.18;
 const BACK_TOP = 0.08;
@@ -99,6 +101,7 @@ export function DeskStage() {
     measure();
     ScrollTrigger.addEventListener('refreshInit', measure);
 
+    const cleanups: (() => void)[] = [];
     const ctx = gsap.context(() => {
       const W = () => size.w;
       const H = () => size.h;
@@ -111,11 +114,10 @@ export function DeskStage() {
         scrollTrigger: {
           trigger: stage,
           start: 'top top',
-          end: () => `+=${Math.round(window.innerHeight * (isMobile ? 3.1 : 3.3))}`,
+          end: () => `+=${Math.round(window.innerHeight * (isMobile ? 4.0 : 4.4))}`,
           pin: true,
           scrub: 0.8,
           anticipatePin: 1,
-          invalidateOnRefresh: true,
           onUpdate: (self) => {
             const t = self.progress * tl.duration();
             theme = t > PHASE_B + 1.2 ? 'navy' : 'desk';
@@ -205,8 +207,7 @@ export function DeskStage() {
       const layer = world.querySelector('[data-tk-layer]');
       tl.fromTo(layer, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, T - 0.05);
       tl.fromTo(all('[data-tk-head]'), { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.06, ease: 'power3.out' }, T);
-      tl.fromTo(all('[data-rule]'), { scaleX: 0 }, { scaleX: 1, duration: 0.5, stagger: 0.035, ease: 'power2.out' }, T + 0.1);
-      tl.fromTo(all('[data-row] > button'), { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.45, stagger: 0.035, ease: 'power3.out' }, T + 0.15);
+      tl.fromTo(all('[data-row]'), { opacity: 0, y: 22, scale: 0.97 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, stagger: 0.035, ease: 'power3.out' }, T + 0.15);
       const countEl = world.querySelector('[data-tk-count]');
       if (countEl) {
         const total = Number((countEl as HTMLElement).dataset.total);
@@ -219,10 +220,37 @@ export function DeskStage() {
         );
       }
       tl.to({}, { duration: 0.5 }, T + 0.9); // hold the finished slide
+
+      // ---------- Stepped scrolling: one scroll gesture = one step ----------
+      // messy desk → tidy desk with her name → open toolkit. Driven through Lenis so the two never fight.
+      const stopTimes = [0, STOP_TIDY, T + 0.95, tl.duration()];
+      const lenis = getLenis();
+      const st = tl.scrollTrigger;
+      if (lenis && st && !isTouch) {
+        let gliding = false;
+        const stopsY = () => stopTimes.map((tm) => st.start + (tm / tl.duration()) * (st.end - st.start));
+        // react only to real wheel / trackpad input, never to programmatic or layout-driven scrolls
+        const onInput = ({ deltaY }: { deltaY: number }) => {
+          if (gliding || Math.abs(deltaY) < 1) return;
+          const y = lenis.scroll;
+          const ys = stopsY();
+          const first = ys[0];
+          const last = ys[ys.length - 1];
+          const down = deltaY > 0;
+          if (down ? y < first - 1 || y >= last - 1 : y <= first + 1 || y > last + 1) return; // outside: free scrolling
+          const target = down ? ys.find((s) => s > y + 1) : [...ys].reverse().find((s) => s < y - 1);
+          if (target === undefined) return;
+          gliding = true;
+          lenis.scrollTo(target, { duration: 1.2, easing: (k: number) => 1 - Math.pow(1 - k, 3), lock: true, force: true, onComplete: () => (gliding = false) });
+        };
+        lenis.on('virtual-scroll', onInput);
+        cleanups.push(() => lenis.off('virtual-scroll', onInput));
+      }
     }, stage);
 
     return () => {
       ScrollTrigger.removeEventListener('refreshInit', measure);
+      cleanups.forEach((fn) => fn());
       ctx.revert();
     };
   }, [isMobile, motion]);

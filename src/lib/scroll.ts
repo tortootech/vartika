@@ -43,6 +43,8 @@ export function initSmoothScroll(): () => void {
   };
 }
 
+export const getLenis = () => lenis;
+
 export function lockScroll(locked: boolean) {
   document.documentElement.classList.toggle('is-locked', locked);
   if (locked) lenis?.stop();

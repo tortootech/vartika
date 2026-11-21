@@ -38,45 +38,53 @@
   padding-bottom: 14px;
   color: var(--cream-soft);
 }
-.rows { display: flex; flex-direction: column; }
+.rows { display: flex; flex-direction: column; gap: 8px; }
 .rowWrap { position: relative; }
-.rule {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 1px;
-  background: var(--line-on-navy);
-  transform-origin: left;
-}
-
+/* each tool sits on its own card */
 .row {
   position: relative;
   width: 100%;
   display: grid;
-  grid-template-columns: 2.2em 26px 1fr;
+  grid-template-columns: 34px 1fr auto;
   align-items: center;
   gap: 12px;
-  padding: 14px 6px;
+  padding: 12px 14px 12px 12px;
   text-align: left;
   color: var(--cream);
-  transition: background-color 0.3s, padding 0.35s var(--ease-out);
+  background: color-mix(in srgb, var(--cream) 6%, var(--navy));
+  border: 1px solid color-mix(in srgb, var(--cream) 13%, transparent);
+  border-radius: 8px;
+  transition: background-color 0.3s, border-color 0.3s, transform 0.35s var(--ease-out);
 }
 .row:hover,
 .row:focus-visible,
-.isActive { background: color-mix(in srgb, var(--cream) 6%, transparent); padding-left: 12px; }
-.row:focus-visible { outline: 1px solid var(--cream); outline-offset: -1px; border-radius: 0; }
-.num { font: 400 11px/1 var(--font-mono); color: var(--cream-soft); }
-.icon { display: grid; place-items: center; color: var(--cream-soft); }
+.isActive {
+  background: color-mix(in srgb, var(--cream) 12%, var(--navy));
+  border-color: color-mix(in srgb, var(--cream) 38%, transparent);
+  transform: translateY(-2px);
+}
+.row:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; }
+.num { font: 400 11px/1 var(--font-mono); color: var(--cream-soft); grid-column: 3; grid-row: 1; align-self: start; }
+.icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--cream) 10%, transparent);
+  color: var(--cream);
+  grid-column: 1;
+  grid-row: 1;
+}
 .icon svg { width: 18px; height: 18px; }
-.text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.text { display: flex; flex-direction: column; gap: 3px; min-width: 0; grid-column: 2; grid-row: 1; }
 .name { font: 500 16px/1.25 var(--font-body); }
 .detail { font: 400 12px/1.35 var(--font-mono); color: var(--cream-soft); }
 
 .tip {
   position: absolute;
-  left: 6px;
-  bottom: calc(100% + 6px);
+  left: 0;
+  bottom: calc(100% + 8px);
   z-index: 5;
   width: max-content;
   max-width: min(280px, 70vw);
@@ -90,7 +98,7 @@
   pointer-events: none;
   transition: opacity 0.2s, transform 0.25s var(--ease-out);
 }
-.g_digital .tip { left: auto; right: 6px; }
+.g_digital .tip { left: auto; right: 0; }
 .row:hover .tip, .row:focus-visible .tip { opacity: 1; transform: none; }
 .rowWrap:has(.row:hover), .rowWrap:has(.row:focus-visible) { z-index: 4; }
 
@@ -104,7 +112,8 @@
   .title { margin: 14px 0 0; font-size: clamp(40px, 7vw, 64px); }
   .sub { grid-column: 1; margin-top: 14px; }
   .stats { grid-row: 2 / span 2; grid-column: 2; margin: 0; border: 0; padding: 0; }
-  .row { grid-template-columns: 2em 22px 1fr; padding: 11px 4px; }
+  .row { grid-template-columns: 30px 1fr auto; padding: 10px 12px 10px 10px; }
+  .icon { width: 30px; height: 30px; }
   .name { font-size: 15px; }
 }
 
@@ -116,11 +125,11 @@
   .title { font-size: 38px; margin: 8px 0 8px; }
   .sub { font-size: 14px; }
   .stats { display: none; }
-  .groups { grid-template-columns: 1fr; row-gap: 14px; }
+  .groups { grid-template-columns: 1fr; row-gap: 12px; }
   .groupHead { padding-bottom: 6px; font-size: 11px; }
-  .rows { display: grid; grid-template-columns: 1fr 1fr; column-gap: 12px; }
-  .row { grid-template-columns: 18px 1fr; gap: 8px; padding: 8px 2px; }
-  .row:hover, .row:focus-visible, .isActive { padding-left: 6px; }
+  .rows { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .row { grid-template-columns: 24px 1fr; gap: 8px; padding: 7px 8px; border-radius: 6px; }
+  .icon { width: 24px; height: 24px; border-radius: 5px; }
   .num, .detail, .tip { display: none; }
   .icon svg { width: 15px; height: 15px; }
   .name { font-size: 13px; }

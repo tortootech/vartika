@@ -61,7 +61,6 @@ export function ToolkitLayer({ standalone = false }: { standalone?: boolean }) {
                 const tipId = `${baseId}-tip-${i}`;
                 return (
                   <li key={t.name} className={s.rowWrap} data-row>
-                    <span className={s.rule} data-rule aria-hidden="true" />
                     <button
                       type="button"
                       className={`${s.row} ${active === t.name ? s.isActive : ''}`}

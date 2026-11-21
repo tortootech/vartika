@@ -3,9 +3,9 @@ import { hero } from '../content';
 import { ScrollTrigger, gsap, prefersReducedMotion, scrollToTarget } from '../lib/scroll';
 import { setSection } from '../lib/store';
 import { useMedia } from '../lib/useMedia';
-import { Doodle } from './Doodles';
+import { Doodle, type DoodleKind } from './Doodles';
 import { ToolkitLayer } from './ToolkitLayer';
-import { TOOLKIT_FOLDER, folders, notes, papers } from './layout';
+import { TOOLKIT_FOLDER, folders, papers } from './layout';
 import s from './DeskStage.module.css';
 
 type Vars = CSSProperties & Record<`--${string}`, string | number>;
@@ -23,11 +23,24 @@ function boxIn(el: HTMLElement, root: HTMLElement) {
   return { cx: x + el.offsetWidth / 2, cy: y + el.offsetHeight / 2, w: el.offsetWidth, h: el.offsetHeight };
 }
 
+const docLabel: Record<DoodleKind, string> = {
+  dashboard: 'A sales dashboard: revenue by month, AOV and repeat rate',
+  trend: 'A monthly order trend chart with a November spike',
+  table: 'A table of sample order rows',
+  sql: 'A SQL query that computes AOV by month',
+  erd: 'An entity-relationship diagram of six tables',
+  process: 'An order-to-delivery process flow with swimlanes',
+  brd: 'A page from a business requirements document',
+  matrix: 'A requirements traceability matrix',
+  stakeholder: 'A stakeholder power and interest map',
+  audit: 'An SEO audit showing 92% site health',
+};
+
 const num = (el: HTMLElement, key: string) => Number(el.dataset[key] ?? 0);
 const pad = (n: number) => String(n).padStart(2, '0');
 
 /** Phase boundary: before this time the counter reads 01, after it 02. */
-const PHASE_B = 2.8;
+const PHASE_B = 1.7;
 /** Folder proportions: height = width × FOLDER_H. The back face starts BACK_TOP down (above it is the tab). */
 const FOLDER_H = 1.18;
 const BACK_TOP = 0.08;
@@ -41,7 +54,6 @@ export function DeskStage() {
   const folderIdx = folders.map((f, i) => ({ ...f, i })).filter((f) => !isMobile || f.mobile);
   const visibleFolders = new Set(folderIdx.map((f) => f.i));
   const paperList = papers.filter((p) => visibleFolders.has(p.folder));
-  const noteList = notes.filter((n) => !isMobile || n.mobile);
   const tkPapers = papers.filter((p) => p.folder === TOOLKIT_FOLDER);
 
   // --- the scrubbed timeline -------------------------------------------------
@@ -79,7 +91,7 @@ export function DeskStage() {
     const measure = () => {
       boxes.clear();
       size = { w: world.offsetWidth, h: world.offsetHeight };
-      world.querySelectorAll<HTMLElement>('[data-slot], [data-note], [data-paper]').forEach((el) => boxes.set(el, boxIn(el, world)));
+      world.querySelectorAll<HTMLElement>('[data-slot], [data-paper]').forEach((el) => boxes.set(el, boxIn(el, world)));
       zw = Math.ceil(Math.max(size.w, size.h / (FOLDER_H * (1 - BACK_TOP))) * 1.04);
       zoom.style.setProperty('--fw', `${zw}px`);
     };
@@ -99,18 +111,15 @@ export function DeskStage() {
         scrollTrigger: {
           trigger: stage,
           start: 'top top',
-          end: () => `+=${Math.round(window.innerHeight * (isMobile ? 4.2 : 4.6))}`,
+          end: () => `+=${Math.round(window.innerHeight * (isMobile ? 3.1 : 3.3))}`,
           pin: true,
           scrub: 0.8,
           anticipatePin: 1,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
             const t = self.progress * tl.duration();
-            const next = t > PHASE_B + 1.2 ? 'navy' : 'desk';
-            if (next !== theme && self.isActive) {
-              theme = next;
-              setSection({ theme });
-            }
+            theme = t > PHASE_B + 1.2 ? 'navy' : 'desk';
+            setSection({ theme }); // the store ignores repeats
             setSection({ index: t < PHASE_B ? 1 : 2 });
             world.classList.toggle(s.tidy, t > 0.12);
           },
@@ -131,18 +140,8 @@ export function DeskStage() {
         tl.fromTo(
           all('[data-folder-part]', slot),
           { x: () => num(slot, 'mx') * W() - box(slot).cx, y: () => num(slot, 'my') * H() - box(slot).cy, rotation: num(slot, 'mr') },
-          { x: 0, y: 0, rotation: 0, duration: 1 },
-          0.05 + order * 0.08,
-        );
-      });
-
-      // Index tags line up along the top edge
-      all('[data-note]').forEach((note, i) => {
-        tl.fromTo(
-          note,
-          { x: () => num(note, 'mx') * W() - box(note).cx, y: () => num(note, 'my') * H() - box(note).cy, rotation: num(note, 'mr') },
-          { x: 0, y: 0, rotation: 0, duration: 0.85 },
-          0.12 + i * 0.1,
+          { x: 0, y: 0, rotation: 0, duration: 0.7 },
+          0.02 + order * 0.05,
         );
       });
 
@@ -151,26 +150,25 @@ export function DeskStage() {
         .sort((a, b) => num(a, 'order') - num(b, 'order'))
         .forEach((p, i) => {
           const slot = p.closest<HTMLElement>('[data-slot]')!;
-          const t = 0.25 + i * (isMobile ? 0.16 : 0.1);
+          const t = 0.12 + i * (isMobile ? 0.09 : 0.055);
           tl.fromTo(
             p,
-            { x: () => num(p, 'mx') * W() - box(p).cx, y: () => num(p, 'my') * H() - box(p).cy, rotation: num(p, 'mr'), scale: 1.12 },
-            { x: 0, y: () => -box(slot).h * 0.95, rotation: 0, scale: 1, duration: 1 },
+            { x: () => num(p, 'mx') * W() - box(p).cx, y: () => num(p, 'my') * H() - box(p).cy, rotation: num(p, 'mr'), scale: isMobile ? 1.15 : 1.45 },
+            { x: 0, y: () => -box(slot).h * 0.95, rotation: 0, scale: 1, duration: 0.6 },
             t,
           );
-          tl.set(p, { zIndex: num(p, 'z') }, t + 1);
-          tl.to(p, { y: 0, duration: 0.3, ease: 'power2.in' }, t + 1);
+          tl.set(p, { zIndex: num(p, 'z') }, t + 0.6);
+          tl.to(p, { y: 0, duration: 0.2, ease: 'power2.in' }, t + 0.6);
         });
 
       // Hero copy arrives on the cleared desk
       const copy = all('[data-hero-copy] > *');
-      tl.fromTo(copy, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.45, stagger: 0.1, ease: 'power2.out' }, 2.0);
+      tl.fromTo(copy, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.35, stagger: 0.08, ease: 'power2.out' }, 1.2);
 
       // ---------- Phase B: the Toolkit file lifts, fills the screen and opens into slide 2 ----------
       const B = PHASE_B;
       const tkSlot = world.querySelector<HTMLElement>('[data-toolkit-slot]')!;
       tl.to(copy, { opacity: 0, y: -40, duration: 0.35, stagger: 0.05, ease: 'power2.in' }, B);
-      tl.to(all('[data-note]'), { y: -60, opacity: 0, duration: 0.4, stagger: 0.04, ease: 'power2.in' }, B);
       const others = slots.filter((sl) => sl !== tkSlot).flatMap((sl) => all('[data-folder-part], [data-paper]', sl));
       tl.to(others, { yPercent: 40, opacity: 0, duration: 0.5, stagger: 0.012, ease: 'power2.in' }, B);
 
@@ -267,30 +265,6 @@ export function DeskStage() {
         <div ref={worldRef} className={s.world} data-desk-world>
           <div className={s.desk} aria-hidden="true" />
 
-          {/* Index tags: tidy state is a row along the top edge */}
-          <ul className={s.notes} aria-label="Notes">
-            {noteList.map((n, i) => (
-              <li
-                key={i}
-                className={`${s.note} ${s['tone_' + n.tone]}`}
-                data-note
-                data-mx={n.messy.x}
-                data-my={n.messy.y}
-                data-mr={n.messy.r}
-                style={{ '--d': n.depth, zIndex: 54 + i } as Vars}
-              >
-                <div className={s.par}>
-                  <div className={s.float} style={{ '--fd': `${5 + i}s`, '--fdl': `${-i * 1.3}s` } as Vars}>
-                    <div className={s.noteFace}>
-                      <span className={s.noteNum}>{pad(notes.indexOf(n) + 1)}</span>
-                      {hero.notes[notes.indexOf(n)]}
-                    </div>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-
           {/* Folder row: tidy layout. Back panel, papers and front panel are siblings so papers can tuck in between. */}
           <div className={s.row} role="list" aria-label="Folders">
             {folderIdx.map((f, order) => {
@@ -332,7 +306,7 @@ export function DeskStage() {
                         data-z={zBase(order) + 1}
                         style={{ '--d': p.depth, '--fd': `${5 + (p.depth % 4)}s`, '--fdl': `${-p.depth * 0.6}s`, zIndex: motion ? 40 + papers.indexOf(p) : zBase(order) + 1 } as Vars}
                         role="img"
-                        aria-label={`A sheet with a ${p.kind === 'erd' ? 'entity-relationship diagram' : p.kind + ' chart'}`}
+                        aria-label={docLabel[p.kind]}
                       >
                         <div className={s.par}>
                           <div className={s.float}>

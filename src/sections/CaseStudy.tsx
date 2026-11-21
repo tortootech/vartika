@@ -13,12 +13,17 @@ export function CaseStudy({ project, onClose }: { project: Project | null; onClo
     if (!d || !project) return;
     d.showModal();
     lockScroll(true);
+    // the dialog sits in the browser's top layer, above the custom cursor: use the native pointer while it is open
+    document.documentElement.classList.add('modal-open');
     const paper = d.querySelector('[data-paper]');
     if (!prefersReducedMotion) {
       gsap.fromTo(paper, { y: 80, rotation: 1.5, opacity: 0 }, { y: 0, rotation: 0, opacity: 1, duration: 0.6, ease: 'power3.out' });
       gsap.fromTo(d.querySelectorAll('[data-reveal]'), { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, stagger: 0.05, delay: 0.15, ease: 'power2.out' });
     }
-    return () => lockScroll(false);
+    return () => {
+      document.documentElement.classList.remove('modal-open');
+      lockScroll(false);
+    };
   }, [project]);
 
   const close = () => ref.current?.close();

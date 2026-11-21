@@ -83,6 +83,9 @@ img, svg { display: block; max-width: 100%; }
 /* custom cursor hides the native one only on fine pointers */
 @media (hover: hover) and (pointer: fine) {
   html.has-cursor, html.has-cursor * { cursor: none !important; }
+  /* while a case study is open (browser top layer), fall back to the native pointer */
+  html.has-cursor.modal-open, html.has-cursor.modal-open * { cursor: auto !important; }
+  html.has-cursor.modal-open :is(a, button, summary) { cursor: pointer !important; }
 }
 
 /* shared editorial type */
@@ -121,3 +124,6 @@ img, svg { display: block; max-width: 100%; }
     scroll-behavior: auto !important;
   }
 }
+
+/* analyst sheets rendered as images (see desk/Doodles.tsx) */
+.doc-img { width: 100%; height: 100%; user-select: none; -webkit-user-drag: none; }

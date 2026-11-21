@@ -6,7 +6,7 @@ import s from './Contact.module.css';
 
 export function Contact() {
   const ref = useRef<HTMLElement>(null);
-  useSectionTriggers(ref, 6, 'navy');
+  useSectionTriggers(ref, 6, 'navy', 'cream');
   const email = contact.links.find((l) => l.label === 'Email');
   const emailHref = email && !isTodo(email.href) ? email.href : undefined;
 

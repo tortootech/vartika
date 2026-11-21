@@ -28,7 +28,6 @@ export const hero = {
   cta: 'View work',
   /** Labels on the folders (index 2 is the one that opens into the toolkit). */
   folders: ['Requirements', 'Data', 'Toolkit', 'Dashboards', 'Research'],
-  notes: ['why?', 'KPIs!', 'clean the nulls', 'ask stakeholders'],
   scrollHint: 'Scroll to tidy up',
 };
 

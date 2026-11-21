@@ -1,18 +1,30 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import { projects, projectsIntro, type Project } from '../content';
 import { Doodle, type DoodleKind } from '../desk/Doodles';
-import { gsap, prefersReducedMotion } from '../lib/scroll';
+import { ScrollTrigger, gsap, prefersReducedMotion, scrollToTarget } from '../lib/scroll';
 import { useSectionTriggers } from '../lib/useSectionTriggers';
 import { CaseStudy } from './CaseStudy';
 import s from './Projects.module.css';
 
-const peek: Record<string, DoodleKind> = { novacart: 'bar', matri: 'check', shopsphere: 'erd', seo: 'line' };
+const peek: Record<string, DoodleKind> = { novacart: 'dashboard', matri: 'brd', shopsphere: 'erd', seo: 'audit' };
 
 export function Projects() {
   const ref = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState<Project | null>(null);
-  useSectionTriggers(ref, 3, 'cream');
+  const pinRef = useRef<ScrollTrigger | null>(null);
+
+  /** Keyboard focus on an off-screen case file scrolls the horizontal track so it is visible. */
+  const revealCard = (card: HTMLElement) => {
+    const st = pinRef.current;
+    const track = trackRef.current;
+    if (!st || !track) return;
+    const dist = st.end - st.start;
+    const target = Math.min(dist, Math.max(0, card.offsetLeft - (window.innerWidth - card.offsetWidth) / 2));
+    const y = st.start + target;
+    if (Math.abs(window.scrollY - y) > 4) scrollToTarget(y);
+  };
+  useSectionTriggers(ref, 3, 'cream', 'navy'); // follows the navy toolkit slide
 
   useLayoutEffect(() => {
     const section = ref.current;
@@ -37,6 +49,7 @@ export function Projects() {
             invalidateOnRefresh: true,
           },
         });
+        pinRef.current = tween.scrollTrigger ?? null;
         // each folder settles from a slight tilt as it slides into view
         gsap.utils.toArray<HTMLElement>('[data-card]', track).forEach((card) => {
           gsap.fromTo(
@@ -65,7 +78,10 @@ export function Projects() {
         });
       });
     }
-    return () => mm.revert();
+    return () => {
+      pinRef.current = null;
+      mm.revert();
+    };
   }, []);
 
   return (
@@ -92,7 +108,7 @@ export function Projects() {
                 <span className={s.tab}>FILE {p.file}</span>
               </div>
               <div className={s.peek} aria-hidden="true">
-                <Doodle kind={peek[p.id] ?? 'text'} />
+                <Doodle kind={peek[p.id] ?? 'brd'} />
               </div>
               <div className={s.front}>
                 <div className={s.meta}>
@@ -100,7 +116,13 @@ export function Projects() {
                   <span className={s.num}>{p.file}.</span>
                 </div>
                 <h3 className={`display ${s.cardTitle}`}>
-                  <button type="button" className={s.open} aria-haspopup="dialog" onClick={() => setOpen(p)}>
+                  <button
+                    type="button"
+                    className={s.open}
+                    aria-haspopup="dialog"
+                    onClick={() => setOpen(p)}
+                    onFocus={(e) => revealCard(e.currentTarget.closest('[data-card]') as HTMLElement)}
+                  >
                     {p.title}
                   </button>
                 </h3>

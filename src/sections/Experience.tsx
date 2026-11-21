@@ -10,7 +10,7 @@ const showPoint = (p: string) => import.meta.env.DEV || !isTodo(p);
 
 export function Experience() {
   const ref = useRef<HTMLElement>(null);
-  useSectionTriggers(ref, 4, 'navy');
+  useSectionTriggers(ref, 4, 'navy', 'cream');
 
   useLayoutEffect(() => {
     const el = ref.current;

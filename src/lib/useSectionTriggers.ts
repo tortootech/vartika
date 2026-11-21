@@ -6,7 +6,7 @@ import { setSection, type Theme } from './store';
  * Registers a section with the HUD (counter) and top-bar theme,
  * and gives it the "paper slide" entrance: its inner content rises in as the sheet comes up.
  */
-export function useSectionTriggers(ref: RefObject<HTMLElement | null>, index: number, theme: Theme) {
+export function useSectionTriggers(ref: RefObject<HTMLElement | null>, index: number, theme: Theme, prevTheme?: Theme) {
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
@@ -22,6 +22,8 @@ export function useSectionTriggers(ref: RefObject<HTMLElement | null>, index: nu
         start: 'top 40px',
         end: 'bottom 40px',
         onToggle: (s) => s.isActive && setSection({ theme }),
+        // scrolling back above this section: the bar returns to the previous section's theme
+        onLeaveBack: () => prevTheme && setSection({ theme: prevTheme }),
       });
       const inner = el.querySelector<HTMLElement>('[data-sheet-inner]');
       if (inner && !prefersReducedMotion) {
@@ -33,5 +35,5 @@ export function useSectionTriggers(ref: RefObject<HTMLElement | null>, index: nu
       }
     }, el);
     return () => ctx.revert();
-  }, [ref, index, theme]);
+  }, [ref, index, theme, prevTheme]);
 }

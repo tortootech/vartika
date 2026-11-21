@@ -6,7 +6,7 @@ import s from './About.module.css';
 
 export function About() {
   const ref = useRef<HTMLElement>(null);
-  useSectionTriggers(ref, 5, 'cream');
+  useSectionTriggers(ref, 5, 'cream', 'navy');
 
   useLayoutEffect(() => {
     const el = ref.current;

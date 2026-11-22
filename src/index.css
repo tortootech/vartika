@@ -39,6 +39,8 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 html.is-locked, html.is-locked body { overflow: hidden; }
+/* the desk steps by itself: no native touch panning there (pinch-zoom still works) */
+html.is-locked, html.desk-steps { touch-action: pinch-zoom; }
 
 body {
   margin: 0;

@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, type CSSProperties } from 'react';
 import { hero } from '../content';
-import { ScrollTrigger, getLenis, gsap, isTouch, prefersReducedMotion, scrollToTarget, setWheelGate } from '../lib/scroll';
+import { ScrollTrigger, getLenis, gsap, prefersReducedMotion, scrollToTarget, setWheelGate } from '../lib/scroll';
 import { setSection } from '../lib/store';
 import { useMedia } from '../lib/useMedia';
 import { Doodle, type DoodleKind } from './Doodles';
@@ -123,6 +123,7 @@ export function DeskStage() {
             setSection({ theme }); // the store ignores repeats
             setSection({ index: t < PHASE_B ? 1 : 2 });
             world.classList.toggle(s.tidy, t > 0.12);
+            document.documentElement.classList.toggle('desk-steps', self.progress < 0.995);
           },
           onToggle: (self) => {
             stage.classList.toggle(s.live, self.isActive);
@@ -220,53 +221,136 @@ export function DeskStage() {
       }
       tl.to({}, { duration: 0.5 }, T + 0.9); // hold the finished slide
 
-      // ---------- Stepped scrolling: one scroll gesture = one step ----------
-      // messy desk → tidy desk with her name → open toolkit. Driven through Lenis so the two never fight.
+      // ---------- Stepped scrolling: one gesture = one step ----------
+      // messy desk → tidy desk with her name → open toolkit → free scrolling.
+      // Wheel, trackpad (incl. momentum), touch swipes and keys all go through the same stepper.
       const stopTimes = [0, STOP_TIDY, T + 0.95, tl.duration()];
       const lenis = getLenis();
       const st = tl.scrollTrigger;
-      if (lenis && st && !isTouch) {
+      if (lenis && st) {
         let gliding = false;
         const stopsY = () => stopTimes.map((tm) => st.start + (tm / tl.duration()) * (st.end - st.start));
-        // One swipe = one step. A trackpad keeps firing wheel events (momentum) for a second or more
-        // after the fingers lift; those belong to the same gesture and are swallowed, so the tidy desk
-        // is never skipped. A new gesture starts after a short quiet gap.
-        const GAP = 240; // ms of silence that ends a gesture
-        let lastInput = 0;
-        let stepped = false; // this gesture already moved one step
-        setWheelGate(({ deltaY, event }) => {
-          if (event.type !== 'wheel') return true; // touch scrolls naturally
-          const now = performance.now();
-          if (now - lastInput > GAP) stepped = false; // fresh gesture
-          lastInput = now;
-          if (Math.abs(deltaY) < 1) return true;
+        const locked = () => lenis.isStopped || !document.documentElement.classList.contains('intro-done');
+        /** Is a move in this direction from the current position inside the stepped zone? */
+        const inZone = (down: boolean) => {
           const y = lenis.scroll;
           const ys = stopsY();
           const first = ys[0];
           const last = ys[ys.length - 1];
-          const down = deltaY > 0;
-          const inside = down ? y >= first - 1 && y < last - 1 : y > first + 1 && y <= last + 1;
-          if (!inside && !gliding) return true; // outside the desk: free scrolling
-          event.preventDefault();
-          if (gliding || stepped) return false; // momentum / extra input of a gesture that already stepped
-          const target = down ? ys.find((s) => s > y + 1) : [...ys].reverse().find((s) => s < y - 1);
-          if (target === undefined) return true;
+          return down ? y >= first - 1 && y < last - 1 : y > first + 1 && y <= last + 1;
+        };
+        const step = (down: boolean) => {
+          const y = lenis.scroll;
+          const ys = stopsY();
+          const target = down ? ys.find((v) => v > y + 2) : [...ys].reverse().find((v) => v < y - 2);
+          if (target === undefined) return;
           gliding = true;
-          stepped = true;
           lenis.scrollTo(target, {
-            duration: 1.7,
-            easing: (k: number) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2), // ease in-out, so the tidy-up reads clearly
+            duration: 1.5,
+            easing: (k: number) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2),
             force: true,
+            lock: true,
             onComplete: () => (gliding = false),
           });
+        };
+
+        // Wheel / trackpad. A trackpad keeps firing events (momentum) after the fingers lift;
+        // they belong to the same gesture and are swallowed. A new gesture starts after a quiet gap.
+        // Event timestamps (not "now") are used, so a busy main thread can't fake a pause between events.
+        const GAP = 220;
+        let lastWheel = -1e9;
+        let lastAbs = 0;
+        let wheelStepped = false;
+        setWheelGate(({ deltaY, event }) => {
+          if (event.type !== 'wheel') return true; // touch is handled below
+          const now = event.timeStamp;
+          const gap = now - lastWheel;
+          const abs = Math.abs(deltaY);
+          // a fading tail (smaller and smaller deltas) shortly after the last event is still momentum
+          const fadingTail = gap < 700 && abs <= lastAbs && abs < 40;
+          if (gap > GAP && !fadingTail) wheelStepped = false;
+          lastWheel = now;
+          lastAbs = abs;
+          if (locked()) {
+            // intro still playing: this gesture is spent, so its momentum can't skip a step once it ends
+            wheelStepped = true;
+            if (event.cancelable) event.preventDefault();
+            return false;
+          }
+          if (Math.abs(deltaY) < 1) return true;
+          const down = deltaY > 0;
+          if (!gliding && !inZone(down)) return true; // outside the desk: free scrolling
+          if (event.cancelable) event.preventDefault();
+          if (gliding || wheelStepped) return false;
+          wheelStepped = true;
+          step(down);
           return false;
         });
         cleanups.push(() => setWheelGate(null));
+
+        // Touch: block native scrolling inside the zone, step once per swipe.
+        let touchY: number | null = null;
+        let touchStepped = false;
+        const onTouchStart = (e: TouchEvent) => {
+          touchY = e.touches[0]?.clientY ?? null;
+          touchStepped = false;
+        };
+        const onTouchMove = (e: TouchEvent) => {
+          if (touchY === null || e.touches.length > 1) return;
+          const dy = touchY - e.touches[0].clientY;
+          const down = dy > 0;
+          if (locked()) {
+            touchStepped = true;
+            if (e.cancelable) e.preventDefault();
+            return;
+          }
+          if (!gliding && !touchStepped && !inZone(down)) return; // free scrolling outside the desk
+          if (e.cancelable) e.preventDefault();
+          if (gliding || touchStepped || Math.abs(dy) < 24) return;
+          touchStepped = true;
+          step(down);
+        };
+        const onTouchEnd = () => (touchY = null);
+        window.addEventListener('touchstart', onTouchStart, { passive: true });
+        window.addEventListener('touchmove', onTouchMove, { passive: false });
+        window.addEventListener('touchend', onTouchEnd, { passive: true });
+        window.addEventListener('touchcancel', onTouchEnd, { passive: true });
+
+        // Keyboard: Space / PageDown / ArrowDown step forward, the reverse keys step back.
+        const onKey = (e: KeyboardEvent) => {
+          const t = e.target as HTMLElement | null;
+          if (e.altKey || e.ctrlKey || e.metaKey || (t && /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+          const downKeys = ['ArrowDown', 'PageDown', ' '];
+          const upKeys = ['ArrowUp', 'PageUp'];
+          let down: boolean | null = null;
+          if (downKeys.includes(e.key)) down = !(e.key === ' ' && e.shiftKey);
+          else if (upKeys.includes(e.key)) down = false;
+          if (down === null) return;
+          if (locked()) {
+            e.preventDefault();
+            return;
+          }
+          if (!gliding && !inZone(down)) return;
+          e.preventDefault();
+          if (gliding || e.repeat) return;
+          step(down);
+        };
+        window.addEventListener('keydown', onKey);
+
+        cleanups.push(() => {
+          window.removeEventListener('touchstart', onTouchStart);
+          window.removeEventListener('touchmove', onTouchMove);
+          window.removeEventListener('touchend', onTouchEnd);
+          window.removeEventListener('touchcancel', onTouchEnd);
+          window.removeEventListener('keydown', onKey);
+        });
       }
     }, stage);
 
+    document.documentElement.classList.add('desk-steps');
     return () => {
       ScrollTrigger.removeEventListener('refreshInit', measure);
+      document.documentElement.classList.remove('desk-steps');
       cleanups.forEach((fn) => fn());
       ctx.revert();
     };

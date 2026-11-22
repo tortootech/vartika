@@ -116,7 +116,7 @@ export function DeskStage() {
           start: 'top top',
           end: () => `+=${Math.round(window.innerHeight * (isMobile ? 4.0 : 4.4))}`,
           pin: true,
-          scrub: 0.8,
+          scrub: 0.25,
           onUpdate: (self) => {
             const t = self.progress * tl.duration();
             theme = t > PHASE_B + 1.2 ? 'navy' : 'desk';
@@ -219,17 +219,33 @@ export function DeskStage() {
           T + 0.15,
         );
       }
-      tl.to({}, { duration: 0.5 }, T + 0.9); // hold the finished slide
+      tl.to({}, { duration: 0.15 }, T + 0.9); // short hold on the finished slide
 
       // ---------- Stepped scrolling: one gesture = one step ----------
       // messy desk → tidy desk with her name → open toolkit → free scrolling.
       // Wheel, trackpad (incl. momentum), touch swipes and keys all go through the same stepper.
-      const stopTimes = [0, STOP_TIDY, T + 0.95, tl.duration()];
+      // last stop: past the pin, with the next section (Projects) at the top of the screen,
+      // so one scroll from the open toolkit carries straight on to the work
+      const stopTimes = [0, STOP_TIDY, T + 0.95];
       const lenis = getLenis();
       const st = tl.scrollTrigger;
       if (lenis && st) {
         let gliding = false;
-        const stopsY = () => stopTimes.map((tm) => st.start + (tm / tl.duration()) * (st.end - st.start));
+        /** Where the next section starts: the bottom of the pin's spacer (exact, whatever the screen height). */
+        const landingY = () => {
+          const next = document.getElementById('projects');
+          if (next) {
+            // Projects is pinned on desktop: measure its in-flow pin spacer, not the (fixed) section itself
+            const flow = next.parentElement?.classList.contains('pin-spacer') ? next.parentElement : next;
+            return Math.round(flow.getBoundingClientRect().top + lenis.scroll);
+          }
+          const spacer = stage.parentElement?.classList.contains('pin-spacer') ? stage.parentElement : stage;
+          return Math.round(spacer.getBoundingClientRect().bottom + lenis.scroll);
+        };
+        const stopsY = () => [
+          ...stopTimes.map((tm) => st.start + (tm / tl.duration()) * (st.end - st.start)),
+          landingY(),
+        ];
         const locked = () => lenis.isStopped || !document.documentElement.classList.contains('intro-done');
         /** Is a move in this direction from the current position inside the stepped zone? */
         const inZone = (down: boolean) => {

@@ -20,7 +20,7 @@ export function Contact() {
       // (pinSpacing must be explicit: GSAP turns it off when the parent is a flex container)
       gsap
         .timeline({
-          scrollTrigger: { trigger: '[data-closing]', start: 'center 55%', end: '+=70%', pin: true, pinSpacing: true, scrub: 0.6, invalidateOnRefresh: true },
+          scrollTrigger: { trigger: '[data-closing]', start: 'center 55%', end: '+=70%', pin: true, pinSpacing: true, scrub: 0.2, invalidateOnRefresh: true },
         })
         .fromTo('[data-fill]', { clipPath: 'inset(0% 100% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', ease: 'none', duration: 1 })
         .to({}, { duration: 0.5 }); // finish painting with room to spare before the page ends

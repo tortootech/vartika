@@ -39,8 +39,7 @@ export function initSmoothScroll(): () => void {
   }
 
   lenis = new Lenis({
-    duration: 1.15,
-    easing: (t) => 1 - Math.pow(1 - t, 4),
+    lerp: 0.14, // follows the wheel closely: smooth, but no long floaty tail
     autoRaf: false,
     virtualScroll: (d) => (wheelGate ? wheelGate(d) : true),
   });

@@ -25,7 +25,7 @@ export function Experience() {
         );
         return;
       }
-      gsap.fromTo(line, { scaleY: 0 }, { scaleY: 1, ease: 'none', scrollTrigger: { trigger: '[data-timeline]', start: 'top 65%', end: 'bottom 65%', scrub: 0.6 } });
+      gsap.fromTo(line, { scaleY: 0 }, { scaleY: 1, ease: 'none', scrollTrigger: { trigger: '[data-timeline]', start: 'top 65%', end: 'bottom 65%', scrub: true } });
       entries.forEach((e) => {
         gsap.fromTo(
           e.querySelectorAll('[data-rv]'),

@@ -44,7 +44,7 @@ export function Projects() {
             start: 'top top',
             end: () => `+=${dist()}`,
             pin: true,
-            scrub: 0.8,
+            scrub: 0.2,
             anticipatePin: 1,
             invalidateOnRefresh: true,
           },

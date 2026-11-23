@@ -97,7 +97,7 @@ export function CaseStudy({ project, onClose }: { project: Project | null; onClo
               <Txt v={project.link} />
             ) : (
               <a className={s.link} href={project.link} target="_blank" rel="noreferrer">
-                Open the full work ↗
+                {project.link.includes('github.com') ? 'View the project on GitHub ↗' : 'Open the full work ↗'}
               </a>
             )}
             <button type="button" className={s.back} onClick={close}>

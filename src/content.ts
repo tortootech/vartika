@@ -14,7 +14,7 @@ export const site = {
   title: 'Vartika Yadav: Business Analyst in the making',
   description:
     'Vartika Yadav turns messy business problems into clear requirements, clean data and decisions people can act on. SQL, Excel, Power BI and BA documentation.',
-  url: 'TODO: production URL, e.g. https://vartika.vercel.app',
+  url: 'https://tortootech.github.io/vartika/',
 };
 
 export const intro = {
@@ -96,14 +96,70 @@ export interface Project {
 export const projectsIntro = {
   label: 'Case files',
   title: ['Selected', 'work.'],
-  sub: 'Four case files. Each one starts with a messy question and ends with something a team can use.',
+  sub: 'Six case files. Each one starts with a messy question and ends with something a team can use.',
   hint: 'Open a file to read the full case.',
 };
 
 export const projects: Project[] = [
   {
-    id: 'novacart',
+    id: 'pricevolume',
     file: '001',
+    title: 'Price vs Volume',
+    kicker: 'HUL and Britannia: raise, shrink or hold?',
+    summary:
+      '18 quarters of reported results from Hindustan Unilever and Britannia, asking one question: what happens to volume when prices go up?',
+    tags: ['PostgreSQL', 'Excel', 'Agile'],
+    problem:
+      'When costs rise, an FMCG company can raise prices, shrink the pack or hold. Companies do not report the trade-off directly, so the question is what the reported numbers say happened to volume when each company pushed prices up.',
+    approach: [
+      'Built a 36 company-quarter dataset (Apr 2022 to Sep 2026) with a source link and a verification note on every row.',
+      'Estimated the price/mix gap: sales growth minus volume growth, year on year.',
+      'Split the quarters at a 6-point gap and compared volume growth in PostgreSQL, with correlation and price-cycle queries.',
+      'Used two-year growth to remove the base effect of the September 2025 GST change.',
+      'Wrote a BA document with the problem statement, stakeholders, KPIs, requirements and an Agile plan.',
+    ],
+    deliverables: ['Sourced 36-row dataset', 'PostgreSQL queries', 'Price simulator', 'BA document', 'Agile backlog'],
+    outcome:
+      'Britannia’s volume grew about 1% in the 8 quarters with a gap of 6 points or more, against about 6.7% in the other 10. HUL showed no such penalty (5.2% vs about 2.8%). With 18 quarters and two companies, the pattern is directional, not a measured elasticity.',
+    metrics: [
+      { value: '~1.0%', label: 'Britannia volume growth, 6+ pt gap' },
+      { value: '~6.7%', label: 'Britannia volume growth, other quarters' },
+      { value: '18', label: 'Quarters analysed' },
+      { value: '36', label: 'Sourced company-quarters' },
+    ],
+    link: 'https://github.com/tortootech/price-vs-volume-hul-britannia',
+  },
+  {
+    id: 'quickcommerce',
+    file: '002',
+    title: 'Quick-Commerce',
+    kicker: 'Blinkit vs Zepto vs Instamart',
+    summary:
+      'Why Blinkit is closing in on break-even while Zepto and Instamart lose far more per order, modelled on 450,000 orders.',
+    tags: ['PostgreSQL', 'Power BI', 'Excel', 'DAX'],
+    problem:
+      'Which quick-commerce player has the healthiest unit economics, and what would it take for the others to catch up?',
+    approach: [
+      'Generated 450,000 synthetic orders across FY24 to FY26, calibrated to each company’s publicly reported scale.',
+      'Ran 15 data-quality checks before any analysis.',
+      'Built per-order unit economics in PostgreSQL: AOV, discount, rider cost and EBITDA per order, using LAG, NTILE and RANK.',
+      'Built a 5-page Power BI dashboard with DAX measures, plus an Excel workbook with PivotTables and a data-quality audit.',
+      'Sized the impact of Zepto closing half its discount and rider-cost gap to Blinkit.',
+    ],
+    deliverables: ['450K-order model', '15 data-quality checks', 'PostgreSQL analysis', '5-page Power BI dashboard', 'DAX measures', 'Excel workbook'],
+    outcome:
+      'Blinkit’s EBITDA per order improved from -Rs 35 to -Rs 3.02, against -Rs 78.75 for Zepto and -Rs 85.18 for Instamart. 84% of Blinkit’s FY26 orders ship within 2 km, against 19% for Zepto. Closing half the discount and rider-cost gap is worth about Rs 735 Cr a year to Zepto. The orders are synthetic, so this is a model, not company disclosures.',
+    metrics: [
+      { value: '-Rs 3.02', label: 'Blinkit EBITDA per order, FY26' },
+      { value: '-Rs 78.75', label: 'Zepto EBITDA per order' },
+      { value: '84% vs 19%', label: 'Orders within 2 km, Blinkit vs Zepto' },
+      { value: '~Rs 735 Cr', label: 'Yearly value to Zepto' },
+    ],
+    link: 'https://github.com/tortootech/quickcommerce-blinkit-zepto-profitability',
+  },
+  {
+    id: 'novacart',
+    file: '003',
     title: 'NovaCart',
     kicker: 'Personalized recommendation engine',
     summary:
@@ -127,11 +183,11 @@ export const projects: Project[] = [
       { value: 'Nov', label: 'Revenue spike' },
       { value: '21', label: 'Page report' },
     ],
-    link: 'TODO: link to the NovaCart report or dashboard (PDF, Drive, GitHub)',
+    link: 'https://github.com/tortootech/novacart-recommendation-engine-ba',
   },
   {
     id: 'matri',
-    file: '002',
+    file: '004',
     title: 'Matri',
     kicker: 'Trust badge repair',
     summary:
@@ -156,7 +212,7 @@ export const projects: Project[] = [
   },
   {
     id: 'shopsphere',
-    file: '003',
+    file: '005',
     title: 'ShopSphere',
     kicker: 'End-to-end analyst workflow',
     summary:
@@ -183,7 +239,7 @@ export const projects: Project[] = [
   },
   {
     id: 'seo',
-    file: '004',
+    file: '006',
     title: 'SEO client work',
     kicker: 'Four clients, four questions',
     summary:
@@ -222,9 +278,9 @@ export const experienceIntro = {
 
 export const experience: ExperienceItem[] = [
   {
-    dates: 'TODO: start – end, e.g. Jun 2025 – Aug 2025',
-    role: 'SEO & Digital Marketing Intern',
-    org: 'The Desired Solution',
+    dates: 'May 2025 – Nov 2025',
+    role: 'SEO Executive (Intern)',
+    org: 'The Desired Solution, Jaipur',
     kind: 'work',
     points: [
       '30% organic traffic growth and a 120% spike in organic search.',
@@ -234,18 +290,18 @@ export const experience: ExperienceItem[] = [
     ],
   },
   {
-    dates: 'TODO: start – end',
-    role: 'Core Team Member',
-    org: 'JECRC Innovation and Incubation Center (JIC)',
+    dates: 'Sep 2024 – Jul 2025',
+    role: 'Member, Operations',
+    org: 'JIC Student Core Team, JECRC Incubation Centre',
     kind: 'work',
-    points: ['TODO: one or two lines on what she did at JIC'],
+    points: ['Supported startup incubation and mentoring programmes.', 'Organised Entrepreneurship Development Programme sessions.'],
   },
   {
-    dates: 'TODO: start – end',
+    dates: 'Mar 2025 – Feb 2026',
     role: 'Co-founder',
-    org: 'ALCERA',
+    org: 'ALCERA, a women’s hygiene startup',
     kind: 'work',
-    points: ['TODO: one or two lines on what ALCERA is and her role in it'],
+    points: ['Pitched to 10+ investors.', 'Built the product prototype.'],
   },
   {
     dates: '2023 – 2027',
@@ -301,14 +357,15 @@ export const contact = {
       q: 'Is she open to internships and full-time roles?',
       a: 'Yes. She is looking for Business Analyst internships now and full-time roles with the 2027 batch.',
     },
-    { q: 'Best way to reach her?', a: 'Email is best, and LinkedIn works too. Both are right below.' },
+    { q: 'Best way to reach her?', a: 'Email is best. Phone and LinkedIn work too. All of them are right below, along with her resume.' },
   ],
   closing: "Let's talk.",
   links: [
-    { label: 'Email', href: 'TODO: mailto:her-address@example.com' },
-    { label: 'LinkedIn', href: 'TODO: https://www.linkedin.com/in/…' },
-    { label: 'GitHub', href: 'TODO: https://github.com/…' },
-    { label: 'Resume', href: 'TODO: /Vartika-Yadav-Resume.pdf (put the PDF in /public)', download: true },
+    { label: 'Email', href: 'mailto:vartikay415@gmail.com', text: 'vartikay415@gmail.com' },
+    { label: 'Phone', href: 'tel:+916261006585', text: '+91 62610 06585' },
+    { label: 'LinkedIn', href: 'https://www.linkedin.com/in/vartika-yadav-b39a23314' },
+    { label: 'GitHub', href: 'https://github.com/tortootech' },
+    { label: 'Resume', href: 'Vartika_Yadav_Resume.pdf', text: 'Resume (PDF)', download: true },
   ],
   footer: 'Designed around one messy desk. Built with React, GSAP and Lenis.',
 };

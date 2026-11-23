@@ -293,11 +293,16 @@ export function DeskStage() {
             if (event.cancelable) event.preventDefault();
             return false;
           }
+          if (wheelStepped) {
+            // the rest of a gesture that already stepped (incl. its momentum after landing on Projects)
+            if (event.cancelable) event.preventDefault();
+            return false;
+          }
           if (Math.abs(deltaY) < 1) return true;
           const down = deltaY > 0;
           if (!gliding && !inZone(down)) return true; // outside the desk: free scrolling
           if (event.cancelable) event.preventDefault();
-          if (gliding || wheelStepped) return false;
+          if (gliding) return false;
           wheelStepped = true;
           step(down);
           return false;

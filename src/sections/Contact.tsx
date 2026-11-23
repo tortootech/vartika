@@ -7,7 +7,7 @@ import s from './Contact.module.css';
 export function Contact() {
   const ref = useRef<HTMLElement>(null);
   useSectionTriggers(ref, 6, 'navy', 'cream');
-  const email = contact.links.find((l) => l.label === 'Email');
+  const email = contact.links.find((l) => l.href.startsWith('mailto:'));
   const emailHref = email && !isTodo(email.href) ? email.href : undefined;
 
   useLayoutEffect(() => {
@@ -95,9 +95,14 @@ export function Contact() {
                 <a
                   className={s.btn}
                   href={l.href}
-                  {...('download' in l && l.download ? { download: '' } : { target: l.href.startsWith('mailto:') ? undefined : '_blank', rel: 'noreferrer' })}
+                  {...('download' in l && l.download
+                    ? { download: '' }
+                    : /^(mailto|tel):/.test(l.href)
+                      ? {}
+                      : { target: '_blank', rel: 'noreferrer' })}
+                  aria-label={'text' in l && l.text ? `${l.label}: ${l.text}` : undefined}
                 >
-                  {l.label}
+                  {'text' in l && l.text ? l.text : l.label}
                   <span aria-hidden="true">↗</span>
                 </a>
               </li>

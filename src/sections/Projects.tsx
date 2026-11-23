@@ -6,7 +6,7 @@ import { useSectionTriggers } from '../lib/useSectionTriggers';
 import { CaseStudy } from './CaseStudy';
 import s from './Projects.module.css';
 
-const peek: Record<string, DoodleKind> = { novacart: 'dashboard', matri: 'brd', shopsphere: 'erd', seo: 'audit' };
+const peek: Record<string, DoodleKind> = { pricevolume: 'trend', quickcommerce: 'sql', novacart: 'dashboard', matri: 'brd', shopsphere: 'erd', seo: 'audit' };
 
 export function Projects() {
   const ref = useRef<HTMLElement>(null);

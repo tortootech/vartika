@@ -71,7 +71,12 @@ export function Experience() {
                   <Txt v={x.dates} />
                 </p>
                 <div className={s.body}>
-                  <p className={`mono-label ${s.kind}`} data-rv>
+                  {/* when the date slot already says the kind (Certification), keep the row's height so every title lines up */}
+                  <p
+                    className={`mono-label ${s.kind} ${kindLabel[x.kind] === x.dates ? s.ghost : ''}`}
+                    data-rv
+                    aria-hidden={kindLabel[x.kind] === x.dates || undefined}
+                  >
                     {kindLabel[x.kind]}
                   </p>
                   <h3 className={`display ${s.role}`} data-rv>
@@ -80,13 +85,15 @@ export function Experience() {
                   <p className={s.org} data-rv>
                     {x.org}
                   </p>
-                  <ul className={s.points} data-rv>
-                    {x.points.filter(showPoint).map((p) => (
-                      <li key={p}>
-                        <Txt v={p} />
-                      </li>
-                    ))}
-                  </ul>
+                  {x.points.some(showPoint) && (
+                    <ul className={s.points} data-rv>
+                      {x.points.filter(showPoint).map((p) => (
+                        <li key={p}>
+                          <Txt v={p} />
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </li>
             ))}

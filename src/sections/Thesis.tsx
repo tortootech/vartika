@@ -29,6 +29,7 @@ function Paper({ c }: { c: Chapter }) {
             <p className={`mono-label ${s.label}`}>
               <span className={s.no}>{c.no}</span> {c.label}
             </p>
+            {c.noteAtLabel && <p className={`mono-label ${s.note} ${s.noteTop}`}>{c.note}</p>}
             <div className={s.poster}>
               <Poster marks={c.marks} motif={c.id === 'pricevolume' ? 'price' : undefined} />
             </div>
@@ -36,7 +37,7 @@ function Paper({ c }: { c: Chapter }) {
               {c.question}
             </h3>
             <p className={s.thesis}>{c.thesis}</p>
-            <p className={`mono-label ${s.note}`}>{c.note}</p>
+            {!c.noteAtLabel && <p className={`mono-label ${s.note}`}>{c.note}</p>}
           </div>
 
           <div className={s.colB}>

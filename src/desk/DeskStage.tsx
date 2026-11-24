@@ -494,7 +494,13 @@ export function DeskStage() {
             <h1 className={`display ${s.name}`}>
               <strong>{first}</strong> <em>{rest.join(' ')}</em>
             </h1>
-            <p className={s.lead}>{hero.lead}</p>
+            <p className={s.lead}>
+              {hero.lead.map((line, i) => (
+                <span key={line} className={i >= 2 ? s.leadSoft : undefined}>
+                  {line}
+                </span>
+              ))}
+            </p>
             <div>
               <a
                 className={s.cta}

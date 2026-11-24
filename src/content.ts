@@ -20,12 +20,13 @@ export const site = {
 
 export const intro = {
   hello: "Hey, it's Vartika.",
-  sub: 'Business Analyst in the making.',
+  sub: 'Curious first. Analyst somewhere in between.',
 };
 
 export const hero = {
   name: 'Vartika Yadav.',
-  lead: 'I turn messy business problems into clear requirements, clean data and decisions people can act on.',
+  /** Under her name, one row each. The second pair is set lighter. */
+  lead: ['A chaos of numbers.', 'A curiosity that won’t quit.', 'Some questions lead to answers,', 'others lead to another Excel sheet.'],
   cta: 'View work',
   /** Labels on the folders (index 2 is the one that opens into the toolkit). */
   folders: ['Requirements', 'Data', 'Toolkit', 'Dashboards', 'Research'],
@@ -223,60 +224,80 @@ export const experienceIntro = {
 
 export const experience: ExperienceItem[] = [
   {
+    // the resume gives no date for the certificate, so the date slot reads "Certification"
+    dates: 'Certification',
+    role: 'Microsoft Business Analyst Professional Certificate',
+    org: 'Coursera',
+    kind: 'certification',
+    points: [],
+  },
+  {
     dates: 'May 2025 – Nov 2025',
     role: 'SEO Executive (Intern)',
     org: 'The Desired Solution, Jaipur',
     kind: 'work',
     points: [
-      '30% organic traffic growth and a 120% spike in organic search.',
+      'Grew organic traffic 30% and drove a 120% organic search spike through technical audits and on-page fixes.',
+      'Tracked KPIs and reported to clients.',
       '186+ Google Business Profile interactions.',
-      'Ran site audits as gap analysis: where the site is, where it should be, and what closes the gap.',
-      'Turned KPI monitoring into stakeholder reporting that clients could act on.',
+      '92% site health for The Timeless Oven.',
     ],
+  },
+  {
+    dates: 'Mar 2025 – Feb 2026',
+    role: 'Co-Founder',
+    org: 'ALCERA (women’s hygiene startup)',
+    kind: 'work',
+    points: ['Pitched to 10+ investors and built the product prototype.'],
   },
   {
     dates: 'Sep 2024 – Jul 2025',
     role: 'Member, Operations',
     org: 'JIC Student Core Team, JECRC Incubation Centre',
     kind: 'work',
-    points: ['Supported startup incubation and mentoring programmes.', 'Organised Entrepreneurship Development Programme sessions.'],
-  },
-  {
-    dates: 'Mar 2025 – Feb 2026',
-    role: 'Co-founder',
-    org: 'ALCERA, a women’s hygiene startup',
-    kind: 'work',
-    points: ['Pitched to 10+ investors.', 'Built the product prototype.'],
+    points: ['Supported startup incubation and mentoring programs and organised Entrepreneurship Development Programme sessions.'],
   },
   {
     dates: '2023 – 2027',
-    role: 'BBA, Digital Marketing',
+    role: 'BBA',
     org: 'JECRC University, Jaipur',
     kind: 'education',
     points: ['CGPA 8.7'],
   },
-  {
-    dates: 'In progress',
-    role: 'Microsoft Business Analyst Professional Certificate',
-    org: 'Coursera',
-    kind: 'certification',
-    points: ['TODO: expected completion date'],
-  },
 ];
 
+/**
+ * About: her own words, first person. No photo anywhere on the site (her choice):
+ * the illustration is built from the pieces of her story.
+ * Each beat has one key phrase (`key`, an exact substring of `text`) set in the slate accent.
+ */
 export const about = {
   label: 'About',
-  title: ['Curious first.', 'Analyst always.'],
-  /** Drop a photo at /public/vartika.jpg, then change this to '/vartika.jpg'. */
-  photo: 'TODO: /vartika.jpg',
-  photoAlt: 'Portrait of Vartika Yadav',
-  photoPlaceholder: 'drop photo here',
-  story: [
-    'I started in SEO and digital marketing, watching traffic graphs climb and dip. The graphs were fun. The question behind them was more fun: why did that happen, and what should we do about it?',
-    'That question pulled me into business analysis. Now I turn fuzzy asks into requirements, raw tables into SQL answers, and dashboards into decisions. Curiosity is the engine; documentation is the steering wheel.',
-    'I’m based in Jaipur, finishing a BBA at JECRC University, and looking for Business Analyst roles with the 2027 batch. If your team has a messy problem, I’d like to see it.',
+  beats: [
+    {
+      text: 'I’ve never really been a straight-line kind of person. My path has been a little messy: BBA, SEO, a startup idea, too many Excel sheets, and a growing habit of asking why?',
+      key: 'a growing habit of asking why?',
+    },
+    {
+      text: 'SEO was where I first fell for the numbers: spotting patterns, figuring out why traffic moved, and understanding what people were actually doing behind the graphs.',
+      key: 'fell for the numbers',
+    },
+    {
+      text: 'That curiosity grew into something bigger: an interest in how businesses work, how people make decisions, and how data can make those decisions clearer.',
+      key: 'how data can make those decisions clearer',
+    },
+    {
+      text: 'Now I’m building that through SQL, Excel, Power BI and Business Analysis.',
+      key: 'SQL, Excel, Power BI and Business Analysis',
+    },
+    {
+      text: 'I like the messy questions. That’s usually where the interesting answers are.',
+      key: 'I like the messy questions.',
+    },
   ],
-  marquee: ['Requirements', 'SQL', 'Power BI', 'DAX', 'Stakeholders', 'BRD', 'FRD', 'User stories', 'Excel', 'Python', 'Process flows', 'Traceability', 'A/B tests', 'SEO'],
+  /** Pieces of the illustration: tags from her path and numbers from her resume. */
+  tags: ['BBA', 'SEO', 'startup', 'Excel', 'SQL', 'Power BI'],
+  numbers: ['30%', '120%', '186+', '92%', '10+', '8.7', '2027'],
 };
 
 export const contact = {
@@ -287,7 +308,7 @@ export const contact = {
    */
   summaryTitle: 'Summary',
   summary:
-    'I’m a BBA (Digital Marketing) student at JECRC University, Jaipur (2023 to 2027, CGPA 8.7), and I’ve moved from SEO and digital marketing into business analysis. I work in SQL, Excel and Power BI, and I write the requirements documents that turn a vague ask into something a team can build. I’ve done real client work as an SEO intern, served on the student core team at the JECRC Incubation Centre, and co-founded ALCERA, a women’s hygiene startup making algae-based sanitary pads, where I pitched to 10+ investors and built the prototype (Mar 2025 to Feb 2026). I’m looking for Business Analyst roles with the 2027 batch.',
+    'I’m a BBA student at JECRC University, Jaipur (2023 to 2027, CGPA 8.7), and I’ve moved from SEO and digital marketing into business analysis. I work in SQL, Excel and Power BI, and I write the requirements documents that turn a vague ask into something a team can build. I’ve done real client work as an SEO intern, served on the student core team at the JECRC Incubation Centre, and co-founded ALCERA, a women’s hygiene startup making algae-based sanitary pads, where I pitched to 10+ investors and built the prototype (Mar 2025 to Feb 2026). I’m looking for Business Analyst roles with the 2027 batch.',
   email: 'vartikay415@gmail.com',
   /** E.164 for the tel: link; `phoneText` is how it reads on the page. */
   phone: '+916261006585',
@@ -336,6 +357,7 @@ export interface Chapter {
   thesis: string;
   /** Mono note under the thesis (an honesty or method note). */
   note: string;
+  noteAtLabel?: boolean;
   built: string[];
   tools: ThesisTool[];
   listTitle: string;
@@ -344,8 +366,8 @@ export interface Chapter {
 }
 
 export const thesisIntro = {
-  label: 'Thesis',
-  title: ['Two research', 'papers.'],
+  label: 'Selected work',
+  title: ['Two case', 'studies.'],
   sub: 'The two questions she spent the longest on, each worked from raw numbers to a written answer.',
 };
 
@@ -365,7 +387,9 @@ export const chapters: Chapter[] = [
     question: 'Why has one quick-commerce player reached profitability while the others haven’t?',
     thesis:
       'Unit economics per order across Blinkit, Zepto and Instamart, traced down one root-cause chain: denser dark stores keep the delivery radius short, a short radius keeps rider cost low, and that, with lighter discounting, is the gap between near break-even and deep losses.',
-    note: 'Built on a synthetic order-level dataset, modeled on public reporting.',
+    note: 'SYNTHETIC DATA · MODELLED ON PUBLIC REPORTING',
+    /** Shown beside the chapter label, so it is seen first. */
+    noteAtLabel: true,
     built: [
       'Excel unit-economics model: 26 tabs, 6 PivotTables, dashboard',
       'PostgreSQL analysis on 450,000 orders',
@@ -379,10 +403,10 @@ export const chapters: Chapter[] = [
     ],
     listTitle: 'What it shows',
     points: [
-      'Blinkit’s EBITDA per order improved from -Rs 35 to -Rs 3.02 (FY24 to FY26). Zepto sits at -Rs 78.75, Instamart at -Rs 85.18.',
+      'In the model, Blinkit’s EBITDA per order improved from -Rs 35 to -Rs 3.02 (FY24 to FY26). Zepto sits at -Rs 78.75, Instamart at -Rs 85.18.',
       '84% of Blinkit’s FY26 orders ship within 2 km, against 19% for Zepto. Rider cost rises by about Rs 15 an order beyond 3 km.',
       'Zepto discounts 8.5% of order value, Blinkit 5.5%: a gap of about Rs 16.24 an order.',
-      'Closing half the discount and rider-cost gap is worth about Rs 735 Cr a year to Zepto and Rs 399 Cr to Instamart.',
+      'In the model, closing half the discount and rider-cost gap is worth about Rs 735 Cr a year to Zepto and Rs 399 Cr to Instamart.',
     ],
     links: [{ label: 'View on GitHub', href: 'https://github.com/tortootech/quickcommerce-blinkit-zepto-profitability' }],
   },
@@ -435,7 +459,7 @@ export const nav = {
   sections: [
     { id: 'top', label: 'Hero' },
     { id: 'toolkit', label: 'Toolkit' },
-    { id: 'thesis', label: 'Thesis' },
+    { id: 'thesis', label: 'Case studies' },
     { id: 'projects', label: 'Projects' },
     { id: 'experience', label: 'Experience' },
     { id: 'about', label: 'About' },

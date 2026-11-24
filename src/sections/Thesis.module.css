@@ -225,3 +225,7 @@
   .section[data-mode='pin'] .tools { margin-top: 9px; }
   .section[data-mode='pin'] .links { margin-top: 14px; }
 }
+
+/* the synthetic-data tag sits right under the chapter label, before the poster */
+.noteTop { margin-top: 12px; font-weight: 600; letter-spacing: 0.08em; }
+.noteTop + .poster { margin-top: 12px; }

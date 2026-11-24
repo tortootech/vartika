@@ -160,11 +160,15 @@
 .name em { font-weight: 300; }
 .lead {
   margin-top: clamp(16px, 2.2vh, 28px);
-  max-width: 32ch;
-  font: 400 clamp(24px, 2vw, 34px) / 1.25 var(--font-body);
+  max-width: 36ch;
+  font: 500 clamp(24px, 1.8vw, 30px) / 1.25 var(--font-body); /* ≥24px: large text, AA on the slate desk */
   letter-spacing: -0.02em;
   color: var(--navy);
 }
+.lead span { display: block; text-wrap: balance; } /* a row that must wrap on a phone wraps evenly */
+/* the second pair: lighter weight, same navy ink (a slate tint would vanish on the slate desk) */
+.leadSoft { font-weight: 300; margin-top: 0.15em; }
+.lead span + .leadSoft:not(.leadSoft + .leadSoft) { margin-top: 0.55em; }
 .cta {
   display: inline-flex;
   align-items: center;
@@ -208,17 +212,23 @@
   .copy { max-width: 72vw; }
 }
 
+/* short laptop screens: lift the copy so it clears the folder row */
+@media (min-width: 768px) and (max-height: 800px) {
+  .copy { top: 15vh; }
+}
+
 /* ---------- mobile ---------- */
 @media (max-width: 767px) {
   .world { --fw: min(27vw, 19vh); }
   .row { bottom: calc(5vh + env(safe-area-inset-bottom)); gap: 10px; }
   .copy { left: 16px; right: 16px; top: calc(var(--bar-h) + 7vh); max-width: none; }
   .name { font-size: clamp(40px, 12vw, 64px); }
-  .lead { font-size: 24px; max-width: 22ch; }
+  .lead { font-size: 24px; max-width: none; }
   .cta { padding: 12px 18px; }
   .hint { bottom: 2vh; }
 }
 @media (max-width: 767px) and (max-height: 640px) {
-  .lead { font-size: 20px; font-weight: 600; } /* ≥18.66px bold = large text for AA */
+  .lead { font-size: 19px; font-weight: 700; } /* ≥18.66px bold = large text for AA */
+  .lead .leadSoft { font-weight: 700; }
 }
 .cta { min-height: 44px; }

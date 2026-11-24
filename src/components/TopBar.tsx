@@ -1,5 +1,5 @@
 import { nav, site } from '../content';
-import { scrollToTarget } from '../lib/scroll';
+import { scrollToSection, scrollToTarget } from '../lib/scroll';
 import { useSection } from '../lib/store';
 import s from './TopBar.module.css';
 
@@ -16,7 +16,6 @@ export function TopBar() {
         }}
       >
         <span className={s.name}>{site.barName}</span>
-        <span className={s.year}>{site.year}</span>
         <span className="visually-hidden"> back to top</span>
       </a>
       <a
@@ -24,7 +23,7 @@ export function TopBar() {
         className={s.pill}
         onClick={(e) => {
           e.preventDefault();
-          scrollToTarget('#contact');
+          scrollToSection('#contact');
         }}
       >
         <span className={s.pillDot} aria-hidden="true" />

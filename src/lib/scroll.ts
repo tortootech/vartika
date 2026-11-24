@@ -69,14 +69,36 @@ export function onScrollProgress(fn: (p: number) => void) {
   return () => progressListeners.delete(fn);
 }
 
-export function scrollToTarget(target: string | HTMLElement | number) {
+/** A pinned section is moved into a fixed layer while pinned: its in-flow spacer is where it really starts. */
+function flowBox(el: HTMLElement) {
+  const parent = el.parentElement;
+  return parent?.classList.contains('pin-spacer') ? parent : el;
+}
+
+/** Page Y where an element starts (pin spacers respected, independent of the current scroll). */
+export function pageTop(el: HTMLElement) {
+  const y = lenis ? lenis.scroll : window.scrollY;
+  return Math.round(flowBox(el).getBoundingClientRect().top + y);
+}
+
+export function scrollToTarget(target: string | HTMLElement | number, duration = 1.6) {
+  const el = typeof target === 'string' ? document.querySelector<HTMLElement>(target) : typeof target === 'number' ? null : target;
+  if (typeof target !== 'number' && !el) return;
+  const y = typeof target === 'number' ? target : pageTop(el!);
   if (lenis) {
-    lenis.scrollTo(target, { duration: 1.6 });
+    lenis.scrollTo(y, { duration, force: true });
     return;
   }
-  if (typeof target === 'number') return window.scrollTo({ top: target });
-  const el = typeof target === 'string' ? document.querySelector<HTMLElement>(target) : target;
-  el?.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+  window.scrollTo({ top: y, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+}
+
+/**
+ * Nav jumps to a section: re-measure every trigger first (so pinned sections above report their
+ * real length), then glide to the section's exact top.
+ */
+export function scrollToSection(selector: string) {
+  ScrollTrigger.refresh();
+  scrollToTarget(selector, 1.4);
 }
 
 /** Debounced global refresh, used after lazy sections mount. */

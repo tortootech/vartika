@@ -3,10 +3,11 @@ import { nav } from './content';
 import { Cursor } from './components/Cursor';
 import { HUD } from './components/HUD';
 import { Intro } from './components/Intro';
+import { MessageDrawer, MessageFab } from './components/MessageDrawer';
 import { TopBar } from './components/TopBar';
 import { DeskStage } from './desk/DeskStage';
 
-/** Sections 3–6 live in their own chunk and mount after first paint. */
+/** Everything after the desk lives in its own chunk and mount after first paint. */
 const Rest = lazy(() => import('./sections/Rest'));
 
 export default function App() {
@@ -35,6 +36,8 @@ export default function App() {
           {introDone ? <Rest /> : <div style={{ minHeight: '100vh', background: 'var(--cream)' }} />}
         </Suspense>
       </main>
+      <MessageFab />
+      <MessageDrawer />
     </>
   );
 }

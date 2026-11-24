@@ -221,3 +221,4 @@
 @media (max-width: 767px) and (max-height: 640px) {
   .lead { font-size: 20px; font-weight: 600; } /* ≥18.66px bold = large text for AA */
 }
+.cta { min-height: 44px; }

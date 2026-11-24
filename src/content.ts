@@ -9,7 +9,8 @@ export const isTodo = (v?: string | null): boolean => !v || v.trim().startsWith(
 
 export const site = {
   name: 'Vartika Yadav',
-  barName: 'VARTIKA—',
+  /** Top-left word in the header. */
+  barName: 'Portfolio',
   year: '©2026',
   title: 'Vartika Yadav: Business Analyst in the making',
   description:
@@ -96,70 +97,14 @@ export interface Project {
 export const projectsIntro = {
   label: 'Case files',
   title: ['Selected', 'work.'],
-  sub: 'Six case files. Each one starts with a messy question and ends with something a team can use.',
+  sub: 'Four more case files. Each one starts with a messy question and ends with something a team can use.',
   hint: 'Open a file to read the full case.',
 };
 
 export const projects: Project[] = [
   {
-    id: 'pricevolume',
-    file: '001',
-    title: 'Price vs Volume',
-    kicker: 'HUL and Britannia: raise, shrink or hold?',
-    summary:
-      '18 quarters of reported results from Hindustan Unilever and Britannia, asking one question: what happens to volume when prices go up?',
-    tags: ['PostgreSQL', 'Excel', 'Agile'],
-    problem:
-      'When costs rise, an FMCG company can raise prices, shrink the pack or hold. Companies do not report the trade-off directly, so the question is what the reported numbers say happened to volume when each company pushed prices up.',
-    approach: [
-      'Built a 36 company-quarter dataset (Apr 2022 to Sep 2026) with a source link and a verification note on every row.',
-      'Estimated the price/mix gap: sales growth minus volume growth, year on year.',
-      'Split the quarters at a 6-point gap and compared volume growth in PostgreSQL, with correlation and price-cycle queries.',
-      'Used two-year growth to remove the base effect of the September 2025 GST change.',
-      'Wrote a BA document with the problem statement, stakeholders, KPIs, requirements and an Agile plan.',
-    ],
-    deliverables: ['Sourced 36-row dataset', 'PostgreSQL queries', 'Price simulator', 'BA document', 'Agile backlog'],
-    outcome:
-      'Britannia’s volume grew about 1% in the 8 quarters with a gap of 6 points or more, against about 6.7% in the other 10. HUL showed no such penalty (5.2% vs about 2.8%). With 18 quarters and two companies, the pattern is directional, not a measured elasticity.',
-    metrics: [
-      { value: '~1.0%', label: 'Britannia volume growth, 6+ pt gap' },
-      { value: '~6.7%', label: 'Britannia volume growth, other quarters' },
-      { value: '18', label: 'Quarters analysed' },
-      { value: '36', label: 'Sourced company-quarters' },
-    ],
-    link: 'https://github.com/tortootech/price-vs-volume-hul-britannia',
-  },
-  {
-    id: 'quickcommerce',
-    file: '002',
-    title: 'Quick-Commerce',
-    kicker: 'Blinkit vs Zepto vs Instamart',
-    summary:
-      'Why Blinkit is closing in on break-even while Zepto and Instamart lose far more per order, modelled on 450,000 orders.',
-    tags: ['PostgreSQL', 'Power BI', 'Excel', 'DAX'],
-    problem:
-      'Which quick-commerce player has the healthiest unit economics, and what would it take for the others to catch up?',
-    approach: [
-      'Generated 450,000 synthetic orders across FY24 to FY26, calibrated to each company’s publicly reported scale.',
-      'Ran 15 data-quality checks before any analysis.',
-      'Built per-order unit economics in PostgreSQL: AOV, discount, rider cost and EBITDA per order, using LAG, NTILE and RANK.',
-      'Built a 5-page Power BI dashboard with DAX measures, plus an Excel workbook with PivotTables and a data-quality audit.',
-      'Sized the impact of Zepto closing half its discount and rider-cost gap to Blinkit.',
-    ],
-    deliverables: ['450K-order model', '15 data-quality checks', 'PostgreSQL analysis', '5-page Power BI dashboard', 'DAX measures', 'Excel workbook'],
-    outcome:
-      'Blinkit’s EBITDA per order improved from -Rs 35 to -Rs 3.02, against -Rs 78.75 for Zepto and -Rs 85.18 for Instamart. 84% of Blinkit’s FY26 orders ship within 2 km, against 19% for Zepto. Closing half the discount and rider-cost gap is worth about Rs 735 Cr a year to Zepto. The orders are synthetic, so this is a model, not company disclosures.',
-    metrics: [
-      { value: '-Rs 3.02', label: 'Blinkit EBITDA per order, FY26' },
-      { value: '-Rs 78.75', label: 'Zepto EBITDA per order' },
-      { value: '84% vs 19%', label: 'Orders within 2 km, Blinkit vs Zepto' },
-      { value: '~Rs 735 Cr', label: 'Yearly value to Zepto' },
-    ],
-    link: 'https://github.com/tortootech/quickcommerce-blinkit-zepto-profitability',
-  },
-  {
     id: 'novacart',
-    file: '003',
+    file: '001',
     title: 'NovaCart',
     kicker: 'Personalized recommendation engine',
     summary:
@@ -187,7 +132,7 @@ export const projects: Project[] = [
   },
   {
     id: 'matri',
-    file: '004',
+    file: '002',
     title: 'Matri',
     kicker: 'Trust badge repair',
     summary:
@@ -212,7 +157,7 @@ export const projects: Project[] = [
   },
   {
     id: 'shopsphere',
-    file: '005',
+    file: '003',
     title: 'ShopSphere',
     kicker: 'End-to-end analyst workflow',
     summary:
@@ -239,7 +184,7 @@ export const projects: Project[] = [
   },
   {
     id: 'seo',
-    file: '006',
+    file: '004',
     title: 'SEO client work',
     kicker: 'Four clients, four questions',
     summary:
@@ -308,7 +253,7 @@ export const experience: ExperienceItem[] = [
     role: 'BBA, Digital Marketing',
     org: 'JECRC University, Jaipur',
     kind: 'education',
-    points: ['CGPA ~8.7'],
+    points: ['CGPA 8.7'],
   },
   {
     dates: 'In progress',
@@ -331,47 +276,172 @@ export const about = {
     'That question pulled me into business analysis. Now I turn fuzzy asks into requirements, raw tables into SQL answers, and dashboards into decisions. Curiosity is the engine; documentation is the steering wheel.',
     'I’m based in Jaipur, finishing a BBA at JECRC University, and looking for Business Analyst roles with the 2027 batch. If your team has a messy problem, I’d like to see it.',
   ],
-  principlesTitle: 'Working principles',
-  principles: [
-    { title: 'Ask the second why.', body: 'The first answer is usually the symptom.' },
-    { title: 'Write the requirement so a stranger can build it.', body: 'If it needs me in the room to explain it, it isn’t finished.' },
-    { title: 'Numbers over adjectives.', body: '"Faster" is a feeling. A target is a requirement.' },
-    { title: 'Clean the data before you trust the chart.', body: 'Nulls and duplicates lie quietly.' },
-    { title: 'Every requirement traces to a reason.', body: 'If it can’t, it gets cut.' },
-    { title: 'Talk to the people who do the work.', body: 'Not just the people who describe it.' },
-    { title: 'One dashboard, one decision.', body: 'Everything else is decoration.' },
-    { title: 'Leave the desk tidier than you found it.', body: 'Docs, files, handovers. All of it.' },
-  ],
   marquee: ['Requirements', 'SQL', 'Power BI', 'DAX', 'Stakeholders', 'BRD', 'FRD', 'User stories', 'Excel', 'Python', 'Process flows', 'Traceability', 'A/B tests', 'SEO'],
 };
 
 export const contact = {
   label: 'Get in touch',
-  faq: [
-    {
-      q: 'What does she do?',
-      a: 'Vartika is an aspiring Business Analyst. She gathers and writes requirements (BRD, FRD, SRS, user stories), digs into data with SQL, Excel and Python, and builds Power BI dashboards that make the answer obvious.',
-    },
-    { q: 'Where is she based?', a: 'Jaipur, India.' },
-    {
-      q: 'Is she open to internships and full-time roles?',
-      a: 'Yes. She is looking for Business Analyst internships now and full-time roles with the 2027 batch.',
-    },
-    { q: 'Best way to reach her?', a: 'Email is best. Phone and LinkedIn work too. All of them are right below, along with her resume.' },
-  ],
+  /**
+   * LinkedIn-style summary, in her voice. Vartika: paste your exact LinkedIn "About" text over this.
+   * Every fact here is from her resume.
+   */
+  summaryTitle: 'Summary',
+  summary:
+    'I’m a BBA (Digital Marketing) student at JECRC University, Jaipur (2023 to 2027, CGPA 8.7), and I’ve moved from SEO and digital marketing into business analysis. I work in SQL, Excel and Power BI, and I write the requirements documents that turn a vague ask into something a team can build. I’ve done real client work as an SEO intern, served on the student core team at the JECRC Incubation Centre, and co-founded ALCERA, a women’s hygiene startup making algae-based sanitary pads, where I pitched to 10+ investors and built the prototype (Mar 2025 to Feb 2026). I’m looking for Business Analyst roles with the 2027 batch.',
+  email: 'vartikay415@gmail.com',
+  /** E.164 for the tel: link; `phoneText` is how it reads on the page. */
+  phone: '+916261006585',
+  phoneText: '+91 62610 06585',
+  linkedin: 'https://www.linkedin.com/in/vartika-yadav-b39a23314',
+  github: 'https://github.com/tortootech',
+  /** File in /public. */
+  resume: 'Vartika_Yadav_Resume.pdf',
+  location: 'Jaipur, Rajasthan',
+  cta: 'Send a message',
   closing: "Let's talk.",
-  links: [
-    { label: 'Email', href: 'mailto:vartikay415@gmail.com', text: 'vartikay415@gmail.com' },
-    { label: 'Phone', href: 'tel:+916261006585', text: '+91 62610 06585' },
-    { label: 'LinkedIn', href: 'https://www.linkedin.com/in/vartika-yadav-b39a23314' },
-    { label: 'GitHub', href: 'https://github.com/tortootech' },
-    { label: 'Resume', href: 'Vartika_Yadav_Resume.pdf', text: 'Resume (PDF)', download: true },
-  ],
   footer: 'Designed around one messy desk. Built with React, GSAP and Lenis.',
 };
 
+/** The contact drawer and its form (Web3Forms; the key is VITE_WEB3FORMS_KEY, see README). */
+export const messageForm = {
+  fab: 'Message me',
+  title: 'Send a message',
+  intro: 'A question, a role, a messy problem: write it here and it goes straight to her inbox.',
+  noKey: 'The form isn’t connected yet, so this opens your email app with the message filled in.',
+  fields: { name: 'Your name', email: 'Your email', subject: 'Subject (optional)', message: 'Message' },
+  send: 'Send message',
+  sendMail: 'Open in email app',
+  sending: 'Sending…',
+  success: ['Thanks, I’ll reply soon.', 'Your message is in her inbox.'],
+  error: 'That didn’t go through. Try again, or email her directly.',
+  retry: 'Try again',
+  mailFallback: 'Email instead',
+  close: 'Close',
+};
+
+/* ---------------------------------------------------------------------------
+   Thesis: the two research case studies, shown as two "papers" after the toolkit.
+   Every figure comes from the two GitHub repos (README, SQL, BA document).
+   --------------------------------------------------------------------------- */
+
+export interface ThesisTool { icon: ToolIcon; name: string; did: string }
+export interface ThesisLink { label: string; href: string }
+export interface Chapter {
+  id: string;
+  no: string;
+  label: string;
+  /** Typographic wordmarks for the split poster: plain names, no logos. */
+  marks: { name: string; note?: string }[];
+  question: string;
+  thesis: string;
+  /** Mono note under the thesis (an honesty or method note). */
+  note: string;
+  built: string[];
+  tools: ThesisTool[];
+  listTitle: string;
+  points: string[];
+  links: ThesisLink[];
+}
+
+export const thesisIntro = {
+  label: 'Thesis',
+  title: ['Two research', 'papers.'],
+  sub: 'The two questions she spent the longest on, each worked from raw numbers to a written answer.',
+};
+
+/** Set when a BRD for the quick-commerce project is confirmed; until then no BRD chip is shown. */
+export const TODO_CONFIRM_BRD = 'TODO_CONFIRM_BRD: is there a BRD for the quick-commerce project?';
+
+export const chapters: Chapter[] = [
+  {
+    id: 'quickcommerce',
+    no: '01',
+    label: 'Chapter 01 · Quick commerce',
+    marks: [
+      { name: 'Blinkit', note: '-Rs 3.02 / order' },
+      { name: 'Zepto', note: '-Rs 78.75 / order' },
+      { name: 'Instamart', note: '-Rs 85.18 / order' },
+    ],
+    question: 'Why has one quick-commerce player reached profitability while the others haven’t?',
+    thesis:
+      'Unit economics per order across Blinkit, Zepto and Instamart, traced down one root-cause chain: denser dark stores keep the delivery radius short, a short radius keeps rider cost low, and that, with lighter discounting, is the gap between near break-even and deep losses.',
+    note: 'Built on a synthetic order-level dataset, modeled on public reporting.',
+    built: [
+      'Excel unit-economics model: 26 tabs, 6 PivotTables, dashboard',
+      'PostgreSQL analysis on 450,000 orders',
+      'Power BI dashboard, 5 pages, DAX',
+      'Written case study',
+    ],
+    tools: [
+      { icon: 'excel', name: 'Excel', did: 'The 26-tab model: PivotTables, a data-quality audit, the dashboard and the impact sizing.' },
+      { icon: 'sql', name: 'PostgreSQL', did: 'Per-order unit economics on all 450,000 orders, with LAG, NTILE and RANK.' },
+      { icon: 'powerbi', name: 'Power BI', did: 'A 5-page dashboard with DAX measures and a fiscal-year slicer.' },
+    ],
+    listTitle: 'What it shows',
+    points: [
+      'Blinkit’s EBITDA per order improved from -Rs 35 to -Rs 3.02 (FY24 to FY26). Zepto sits at -Rs 78.75, Instamart at -Rs 85.18.',
+      '84% of Blinkit’s FY26 orders ship within 2 km, against 19% for Zepto. Rider cost rises by about Rs 15 an order beyond 3 km.',
+      'Zepto discounts 8.5% of order value, Blinkit 5.5%: a gap of about Rs 16.24 an order.',
+      'Closing half the discount and rider-cost gap is worth about Rs 735 Cr a year to Zepto and Rs 399 Cr to Instamart.',
+    ],
+    links: [{ label: 'View on GitHub', href: 'https://github.com/tortootech/quickcommerce-blinkit-zepto-profitability' }],
+  },
+  {
+    id: 'pricevolume',
+    no: '02',
+    label: 'Chapter 02 · Price-hike tolerance',
+    marks: [{ name: 'Britannia' }, { name: 'HUL' }],
+    question: 'If prices rise, will customers still buy?',
+    thesis:
+      'A price-vs-volume analysis of 18 quarters per company at HUL and Britannia. It separates price and mix effects from volume, then runs a profit break-even check: how much volume a company can lose before a price hike stops paying for itself.',
+    note: 'Data: company press releases and results; some Britannia volumes from press reports. Directional, not causal.',
+    built: [
+      'Price simulator',
+      'Price/mix gap analysis',
+      'Two-year growth view',
+      'BA document: stakeholders, KPIs, workflow diagrams, KPI reporting',
+      'Agile artifacts: backlog, user stories, 3-sprint plan',
+      'PostgreSQL SQL layer',
+    ],
+    tools: [
+      { icon: 'sql', name: 'PostgreSQL', did: 'Schema, quarter ordering, the gap split, correlation, two-year growth with LAG, the simulator and the break-even query.' },
+      { icon: 'stories', name: 'Backlog', did: 'A MoSCoW-prioritised, Jira-style backlog with user stories and a 3-sprint plan.' },
+      { icon: 'doc', name: 'BA document', did: 'Problem statement, stakeholders, workflow diagrams, KPI definitions and a monthly pricing scorecard.' },
+    ],
+    listTitle: 'Key features',
+    points: [
+      'Price simulator: pick a price/mix gap and see every past quarter within 1.5 points of it, and what volume did.',
+      'Break-even check: the volume fall at which a price rise stops adding profit, from margin, cost rise and price rise.',
+      'Source-linked quarterly data: 36 company-quarters, each with its source link and a verification note.',
+      'KPI reporting: a one-page red, amber, green pricing scorecard for the category manager and CFO.',
+    ],
+    links: [
+      { label: 'View on GitHub', href: 'https://github.com/tortootech/price-vs-volume-hul-britannia' },
+      { label: 'See the sourced data', href: 'https://github.com/tortootech/price-vs-volume-hul-britannia/blob/main/data/hul_britannia_quarterly.csv' },
+      /** The repo has the simulator as a SQL query; there is no hosted simulator yet. */
+      { label: 'Open live simulator', href: 'TODO: URL of the live price simulator' },
+    ],
+  },
+];
+
+/** Fallback for any GitHub link that is still a TODO. */
+export const githubProfile = 'https://github.com/tortootech';
+
+export interface NavSection { id: string; label: string }
 export const nav = {
   contact: 'Contact',
   skip: 'Skip to content',
-  sections: ['Hero', 'Toolkit', 'Projects', 'Experience', 'About', 'Contact'],
+  /** Page order. The HUD counter and its total come from this list. */
+  sections: [
+    { id: 'top', label: 'Hero' },
+    { id: 'toolkit', label: 'Toolkit' },
+    { id: 'thesis', label: 'Thesis' },
+    { id: 'projects', label: 'Projects' },
+    { id: 'experience', label: 'Experience' },
+    { id: 'about', label: 'About' },
+    { id: 'contact', label: 'Contact' },
+  ] as NavSection[],
 };
+
+/** 1-based position of a section in the page order. */
+export const sectionNo = (id: string) => nav.sections.findIndex((x) => x.id === id) + 1;

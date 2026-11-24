@@ -3,10 +3,11 @@ import { projects, projectsIntro, type Project } from '../content';
 import { Doodle, type DoodleKind } from '../desk/Doodles';
 import { ScrollTrigger, gsap, prefersReducedMotion, scrollToTarget } from '../lib/scroll';
 import { useSectionTriggers } from '../lib/useSectionTriggers';
+import { isOverlayOpen, isRestoringFocus } from '../lib/useScrollLock';
 import { CaseStudy } from './CaseStudy';
 import s from './Projects.module.css';
 
-const peek: Record<string, DoodleKind> = { pricevolume: 'trend', quickcommerce: 'sql', novacart: 'dashboard', matri: 'brd', shopsphere: 'erd', seo: 'audit' };
+const peek: Record<string, DoodleKind> = { novacart: 'dashboard', matri: 'brd', shopsphere: 'erd', seo: 'audit' };
 
 export function Projects() {
   const ref = useRef<HTMLElement>(null);
@@ -16,6 +17,8 @@ export function Projects() {
 
   /** Keyboard focus on an off-screen case file scrolls the horizontal track so it is visible. */
   const revealCard = (card: HTMLElement) => {
+    // focus handed back by a closing case file must not move the page
+    if (isOverlayOpen() || isRestoringFocus()) return;
     const st = pinRef.current;
     const track = trackRef.current;
     if (!st || !track) return;
@@ -24,7 +27,7 @@ export function Projects() {
     const y = st.start + target;
     if (Math.abs(window.scrollY - y) > 4) scrollToTarget(y);
   };
-  useSectionTriggers(ref, 3, 'cream', 'navy'); // follows the navy toolkit slide
+  useSectionTriggers(ref, 'cream', 'desk'); // follows the Thesis desk
 
   useLayoutEffect(() => {
     const section = ref.current;

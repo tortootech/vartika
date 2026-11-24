@@ -4,8 +4,9 @@ import { About } from './About';
 import { Contact } from './Contact';
 import { Experience } from './Experience';
 import { Projects } from './Projects';
+import { Thesis } from './Thesis';
 
-/** Sections 3–6. Loaded as a separate chunk; ScrollTrigger re-measures once they mount. */
+/** Everything after the desk. Loaded as a separate chunk; ScrollTrigger re-measures once they mount. */
 export default function Rest() {
   useEffect(() => {
     requestRefresh();
@@ -14,6 +15,7 @@ export default function Rest() {
   }, []);
   return (
     <>
+      <Thesis />
       <Projects />
       <Experience />
       <About />

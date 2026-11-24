@@ -21,12 +21,6 @@
   font: 800 20px/1 var(--font-display);
   letter-spacing: -0.01em;
 }
-.year {
-  font: 500 11px/1 var(--font-mono);
-  padding: 4px 6px;
-  border-radius: 999px;
-  transition: background-color 0.4s, color 0.4s;
-}
 .pill {
   display: inline-flex;
   align-items: center;
@@ -46,10 +40,7 @@
 /* themes follow the section under the bar */
 .desk, .cream { color: var(--navy); }
 .navy { color: var(--cream); }
-.desk .year { background: var(--navy); color: var(--cream); }
-.cream .year { color: var(--navy); }
-.navy .year { color: var(--cream); }
-.desk .pill { background: var(--navy); }
+.desk .cream .navy .desk .pill { background: var(--navy); }
 .desk .pill:hover { background: var(--slate-deep); }
 .navy .pill:hover { background: var(--cream); color: var(--navy); }
 .navy .pill:hover .pillDot { background: var(--navy); }
@@ -72,3 +63,6 @@
 }
 .cream::before { background: linear-gradient(var(--cream) 55%, transparent); opacity: 1; }
 .navy::before { background: linear-gradient(var(--navy) 55%, transparent); opacity: 1; }
+
+/* 44px touch targets */
+.brand, .pill { min-height: 44px; align-items: center; }

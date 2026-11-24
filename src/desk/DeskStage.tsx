@@ -1,7 +1,8 @@
 import { useLayoutEffect, useRef, type CSSProperties } from 'react';
-import { hero } from '../content';
+import { hero, sectionNo } from '../content';
 import { ScrollTrigger, getLenis, gsap, prefersReducedMotion, scrollToTarget, setWheelGate } from '../lib/scroll';
 import { setSection } from '../lib/store';
+import { isOverlayOpen } from '../lib/useScrollLock';
 import { useMedia } from '../lib/useMedia';
 import { Doodle, type DoodleKind } from './Doodles';
 import { ToolkitLayer } from './ToolkitLayer';
@@ -70,7 +71,7 @@ export function DeskStage() {
           trigger: stage,
           start: 'top 50%',
           end: 'bottom 50%',
-          onToggle: (self) => self.isActive && setSection({ index: 1, theme: 'desk' }),
+          onToggle: (self) => self.isActive && setSection({ index: sectionNo('top'), theme: 'desk' }),
         });
         const tk = document.getElementById('toolkit');
         if (tk)
@@ -78,7 +79,7 @@ export function DeskStage() {
             trigger: tk,
             start: 'top 50%',
             end: 'bottom 50%',
-            onToggle: (self) => self.isActive && setSection({ index: 2, theme: 'navy' }),
+            onToggle: (self) => self.isActive && setSection({ index: sectionNo('toolkit'), theme: 'navy' }),
           });
       }, stage);
       return () => st.revert();
@@ -121,7 +122,7 @@ export function DeskStage() {
             const t = self.progress * tl.duration();
             theme = t > PHASE_B + 1.2 ? 'navy' : 'desk';
             setSection({ theme }); // the store ignores repeats
-            setSection({ index: t < PHASE_B ? 1 : 2 });
+            setSection({ index: sectionNo(t < PHASE_B ? 'top' : 'toolkit') });
             world.classList.toggle(s.tidy, t > 0.12);
             document.documentElement.classList.toggle('desk-steps', self.progress < 0.995);
           },
@@ -224,7 +225,7 @@ export function DeskStage() {
       // ---------- Stepped scrolling: one gesture = one step ----------
       // messy desk → tidy desk with her name → open toolkit → free scrolling.
       // Wheel, trackpad (incl. momentum), touch swipes and keys all go through the same stepper.
-      // last stop: past the pin, with the next section (Projects) at the top of the screen,
+      // last stop: past the pin, with the next section (Thesis) at the top of the screen,
       // so one scroll from the open toolkit carries straight on to the work
       const stopTimes = [0, STOP_TIDY, T + 0.95];
       const lenis = getLenis();
@@ -233,9 +234,9 @@ export function DeskStage() {
         let gliding = false;
         /** Where the next section starts: the bottom of the pin's spacer (exact, whatever the screen height). */
         const landingY = () => {
-          const next = document.getElementById('projects');
+          const next = document.getElementById('thesis');
           if (next) {
-            // Projects is pinned on desktop: measure its in-flow pin spacer, not the (fixed) section itself
+            // the next section may be pinned: measure its in-flow pin spacer, not the (fixed) section itself
             const flow = next.parentElement?.classList.contains('pin-spacer') ? next.parentElement : next;
             return Math.round(flow.getBoundingClientRect().top + lenis.scroll);
           }
@@ -246,7 +247,9 @@ export function DeskStage() {
           ...stopTimes.map((tm) => st.start + (tm / tl.duration()) * (st.end - st.start)),
           landingY(),
         ];
-        const locked = () => lenis.isStopped || !document.documentElement.classList.contains('intro-done');
+        // only the intro locks the desk. An open overlay stops Lenis too, but then every handler below
+        // steps aside (isOverlayOpen) so the panel can scroll and the page is left exactly as it was.
+        const locked = () => !document.documentElement.classList.contains('intro-done');
         /** Is a move in this direction from the current position inside the stepped zone? */
         const inZone = (down: boolean) => {
           const y = lenis.scroll;
@@ -279,6 +282,7 @@ export function DeskStage() {
         let wheelStepped = false;
         setWheelGate(({ deltaY, event }) => {
           if (event.type !== 'wheel') return true; // touch is handled below
+          if (isOverlayOpen()) return true; // Lenis lets the panel scroll and holds the page
           const now = event.timeStamp;
           const gap = now - lastWheel;
           const abs = Math.abs(deltaY);
@@ -317,7 +321,7 @@ export function DeskStage() {
           touchStepped = false;
         };
         const onTouchMove = (e: TouchEvent) => {
-          if (touchY === null || e.touches.length > 1) return;
+          if (touchY === null || e.touches.length > 1 || isOverlayOpen()) return;
           const dy = touchY - e.touches[0].clientY;
           const down = dy > 0;
           if (locked()) {
@@ -340,7 +344,9 @@ export function DeskStage() {
         // Keyboard: Space / PageDown / ArrowDown step forward, the reverse keys step back.
         const onKey = (e: KeyboardEvent) => {
           const t = e.target as HTMLElement | null;
-          if (e.altKey || e.ctrlKey || e.metaKey || (t && /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+          if (e.defaultPrevented || isOverlayOpen() || e.altKey || e.ctrlKey || e.metaKey) return;
+          if (t && (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable)) return;
+          if (e.key === ' ' && t && /^(BUTTON|A|SUMMARY)$/.test(t.tagName)) return; // Space presses the control
           const downKeys = ['ArrowDown', 'PageDown', ' '];
           const upKeys = ['ArrowUp', 'PageUp'];
           let down: boolean | null = null;
@@ -492,10 +498,10 @@ export function DeskStage() {
             <div>
               <a
                 className={s.cta}
-                href="#projects"
+                href="#thesis"
                 onClick={(e) => {
                   e.preventDefault();
-                  scrollToTarget('#projects');
+                  scrollToTarget('#thesis');
                 }}
               >
                 {hero.cta}

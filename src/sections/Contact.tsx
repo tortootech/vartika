@@ -1,21 +1,68 @@
-import { useLayoutEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { contact, isTodo, site } from '../content';
+import { openDrawer } from '../lib/drawer';
 import { gsap, prefersReducedMotion, scrollToTarget } from '../lib/scroll';
 import { useSectionTriggers } from '../lib/useSectionTriggers';
 import s from './Contact.module.css';
 
+const ok = (v?: string) => !isTodo(v);
+
+async function copyText(text: string) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    // older browsers / no permission: the classic hidden-textarea copy
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    const done = document.execCommand('copy');
+    ta.remove();
+    return done;
+  }
+}
+
+function CopyButton({ text, what }: { text: string; what: string }) {
+  const [copied, setCopied] = useState(false);
+  useEffect(() => {
+    if (!copied) return;
+    const id = window.setTimeout(() => setCopied(false), 1500);
+    return () => window.clearTimeout(id);
+  }, [copied]);
+  return (
+    <button
+      type="button"
+      className={s.copy}
+      onClick={async () => setCopied(await copyText(text))}
+      aria-label={copied ? `${what} copied` : `Copy ${what.toLowerCase()}`}
+    >
+      <span aria-hidden="true">{copied ? 'Copied' : 'Copy'}</span>
+      <span className="visually-hidden" aria-live="polite">
+        {copied ? `${what} copied to the clipboard` : ''}
+      </span>
+    </button>
+  );
+}
+
 export function Contact() {
   const ref = useRef<HTMLElement>(null);
-  useSectionTriggers(ref, 6, 'navy', 'cream');
-  const email = contact.links.find((l) => l.href.startsWith('mailto:'));
-  const emailHref = email && !isTodo(email.href) ? email.href : undefined;
+  useSectionTriggers(ref, 'navy', 'cream');
+  const emailHref = ok(contact.email) ? `mailto:${contact.email}` : undefined;
+  const links = [
+    ok(contact.linkedin) && { label: 'LinkedIn', href: contact.linkedin },
+    ok(contact.github) && { label: 'GitHub', href: contact.github },
+  ].filter(Boolean) as { label: string; href: string }[];
 
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
     const ctx = gsap.context(() => {
       if (prefersReducedMotion) return;
-      gsap.from('[data-faq] > li', { y: 40, opacity: 0, duration: 0.8, stagger: 0.08, ease: 'power3.out', scrollTrigger: { trigger: '[data-faq]', start: 'top 78%', toggleActions: 'play none none reverse' } });
+      gsap.from('[data-block]', { y: 40, opacity: 0, duration: 0.8, stagger: 0.1, ease: 'power3.out', scrollTrigger: { trigger: '[data-blocks]', start: 'top 80%', toggleActions: 'play none none none' } });
       // the line holds in view while cream paint sweeps across it left → right with the scroll
       // (pinSpacing must be explicit: GSAP turns it off when the parent is a flex container)
       gsap
@@ -66,49 +113,79 @@ export function Contact() {
           </h2>
         </header>
 
-        <ol className={s.faq} data-faq>
-          {contact.faq.map((f, i) => (
-            <li key={f.q}>
-              <details open={i === 0} name="faq">
-                <summary>
-                  <span className={s.n}>{String(i + 1).padStart(3, '0')}.</span>
-                  <span className={s.q}>{f.q}</span>
-                  <span className={s.plus} aria-hidden="true" />
-                </summary>
-                <p className={s.a}>{f.a}</p>
-              </details>
-            </li>
-          ))}
-        </ol>
+        <div className={s.blocks} data-blocks>
+          <div className={s.block} data-block>
+            <h3 className={`mono-label ${s.k}`}>{contact.summaryTitle}</h3>
+            <p className={s.summary}>{contact.summary}</p>
+          </div>
 
-        <ul className={s.links} aria-label="Contact links">
-          {contact.links.map((l) =>
-            isTodo(l.href) ? (
-              <li key={l.label}>
-                <span className={`${s.btn} ${s.pending}`} aria-disabled="true" title={import.meta.env.DEV ? l.href : 'Link coming soon'}>
-                  {l.label}
-                  {import.meta.env.DEV && <small className={s.todo}>TODO</small>}
-                </span>
-              </li>
-            ) : (
-              <li key={l.label}>
-                <a
-                  className={s.btn}
-                  href={l.href}
-                  {...('download' in l && l.download
-                    ? { download: '' }
-                    : /^(mailto|tel):/.test(l.href)
-                      ? {}
-                      : { target: '_blank', rel: 'noreferrer' })}
-                  aria-label={'text' in l && l.text ? `${l.label}: ${l.text}` : undefined}
-                >
-                  {'text' in l && l.text ? l.text : l.label}
-                  <span aria-hidden="true">↗</span>
-                </a>
-              </li>
-            ),
-          )}
-        </ul>
+          <dl className={s.block} data-block>
+            {ok(contact.email) && (
+              <div className={s.row}>
+                <dt className={`mono-label ${s.k}`}>Email</dt>
+                <dd className={s.v}>
+                  <a href={emailHref} className={s.big}>
+                    {contact.email}
+                  </a>
+                  <CopyButton text={contact.email} what="Email" />
+                </dd>
+              </div>
+            )}
+            {ok(contact.phone) && (
+              <div className={s.row}>
+                <dt className={`mono-label ${s.k}`}>Phone</dt>
+                <dd className={s.v}>
+                  <a href={`tel:${contact.phone}`} className={s.big}>
+                    {contact.phoneText}
+                  </a>
+                  <CopyButton text={contact.phoneText} what="Phone number" />
+                </dd>
+              </div>
+            )}
+            {(links.length > 0 || ok(contact.resume)) && (
+              <div className={s.row}>
+                <dt className={`mono-label ${s.k}`}>Links</dt>
+                <dd className={s.v}>
+                  <ul className={s.links}>
+                    {links.map((l) => (
+                      <li key={l.label}>
+                        <a className={s.btn} href={l.href} target="_blank" rel="noopener noreferrer">
+                          {l.label}
+                          <span aria-hidden="true">↗</span>
+                        </a>
+                      </li>
+                    ))}
+                    {ok(contact.resume) && (
+                      <li>
+                        <a className={s.btn} href={contact.resume} download>
+                          Resume (PDF)
+                          <span aria-hidden="true">↓</span>
+                        </a>
+                      </li>
+                    )}
+                  </ul>
+                </dd>
+              </div>
+            )}
+            {ok(contact.location) && (
+              <div className={s.row}>
+                <dt className={`mono-label ${s.k}`}>Location</dt>
+                <dd className={s.v}>
+                  <span className={s.plain}>{contact.location}</span>
+                </dd>
+              </div>
+            )}
+          </dl>
+
+          <div className={`${s.block} ${s.ctaBlock}`} data-block>
+            <button type="button" className={s.cta} onClick={openDrawer} aria-haspopup="dialog">
+              {contact.cta}
+              <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true">
+                <path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
 
       <Closing className={s.closing} data-closing {...(emailHref ? { href: emailHref } : {})}>
@@ -135,7 +212,7 @@ export function Contact() {
         <p>
           {site.year} {site.name}. {contact.footer}
         </p>
-        <button type="button" className={s.top} onClick={() => scrollToTarget(0)}>
+        <button type="button" className={s.top} onClick={() => scrollToTarget(0, 2)}>
           Back to the desk ↑
         </button>
       </footer>

@@ -1,34 +1,35 @@
 import { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { isTodo, type Project } from '../content';
-import { Txt } from '../components/Todo';
-import { gsap, lockScroll, prefersReducedMotion } from '../lib/scroll';
+import { gsap, prefersReducedMotion } from '../lib/scroll';
+import { useScrollLock } from '../lib/useScrollLock';
 import s from './CaseStudy.module.css';
 
-/** Full case study in a native <dialog>: focus trap, Esc to close, focus returns to the card. */
+/** Full case study in a native <dialog>: page locked, focus trapped, Esc / X / backdrop close, focus returns to the card. */
 export function CaseStudy({ project, onClose }: { project: Project | null; onClose: () => void }) {
   const ref = useRef<HTMLDialogElement>(null);
+  const close = () => ref.current?.close();
+  // page lock, focus trap and focus return (declared before the effect that opens the dialog)
+  useScrollLock(!!project, ref, close);
 
   useEffect(() => {
     const d = ref.current;
     if (!d || !project) return;
-    d.showModal();
-    lockScroll(true);
-    // the dialog sits in the browser's top layer, above the custom cursor: use the native pointer while it is open
-    document.documentElement.classList.add('modal-open');
+    if (!d.open) d.showModal();
     const paper = d.querySelector('[data-paper]');
     if (!prefersReducedMotion) {
       gsap.fromTo(paper, { y: 80, rotation: 1.5, opacity: 0 }, { y: 0, rotation: 0, opacity: 1, duration: 0.6, ease: 'power3.out' });
       gsap.fromTo(d.querySelectorAll('[data-reveal]'), { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, stagger: 0.05, delay: 0.15, ease: 'power2.out' });
     }
     return () => {
-      document.documentElement.classList.remove('modal-open');
-      lockScroll(false);
+      if (d.open) d.close(); // unmounting while open never leaves the page locked
     };
   }, [project]);
 
-  const close = () => ref.current?.close();
-
-  return (
+  // Portalled to <body>: the Projects section is pinned, and ScrollTrigger moves a pinned section in
+  // the DOM on every refresh (resize, mobile address bar). Moving an open <dialog> drops it out of the
+  // top layer, leaving a non-modal panel and a locked page. Outside the section that can't happen.
+  return createPortal(
     <dialog
       ref={ref}
       className={s.dialog}
@@ -94,9 +95,9 @@ export function CaseStudy({ project, onClose }: { project: Project | null; onClo
 
           <footer className={s.foot} data-reveal>
             {isTodo(project.link) ? (
-              <Txt v={project.link} />
+              <span />
             ) : (
-              <a className={s.link} href={project.link} target="_blank" rel="noreferrer">
+              <a className={s.link} href={project.link} target="_blank" rel="noopener noreferrer">
                 {project.link.includes('github.com') ? 'View the project on GitHub ↗' : 'Open the full work ↗'}
               </a>
             )}
@@ -106,6 +107,7 @@ export function CaseStudy({ project, onClose }: { project: Project | null; onClo
           </footer>
         </article>
       )}
-    </dialog>
+    </dialog>,
+    document.body,
   );
 }

@@ -20,4 +20,4 @@
 }
 .grow .dot { transform: scale(3.4); opacity: 0.55; }
 
-:global(html.modal-open) .cursor { opacity: 0 !important; }
+:global(html.overlay-open) .cursor { opacity: 0 !important; }

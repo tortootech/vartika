@@ -148,3 +148,4 @@
   .sub { display: none; }
   .title { font-size: 32px; }
 }
+@media (max-width: 767px) { .row { min-height: 44px; } }

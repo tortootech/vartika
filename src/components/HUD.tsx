@@ -4,7 +4,7 @@ import { useSection } from '../lib/store';
 import { nav } from '../content';
 import s from './HUD.module.css';
 
-/** Section counter `[ 0X / 06 ]` and the thin progress bar along the right edge. */
+/** Section counter `[ 0X / 0N ]` (N = number of sections in content.ts) and the thin progress bar along the right edge. */
 export function HUD() {
   const { index, theme } = useSection();
   const barRef = useRef<HTMLDivElement>(null);
@@ -19,12 +19,15 @@ export function HUD() {
   }, []);
 
   const pad = (n: number) => String(n).padStart(2, '0');
+  const total = nav.sections.length;
   return (
     <div className={`${s.hud} ${s[theme]}`}>
       <p className={`mono-label ${s.counter}`} aria-live="polite">
-        <span className="visually-hidden">Section {index} of 6: {nav.sections[index - 1]}</span>
+        <span className="visually-hidden">
+          Section {index} of {total}: {nav.sections[index - 1]?.label}
+        </span>
         <span aria-hidden="true">
-          [ <span className={s.num} key={index}>{pad(index)}</span> / 06 ]
+          [ <span className={s.num} key={index}>{pad(index)}</span> / {pad(total)} ]
         </span>
       </p>
       <div className={s.track} aria-hidden="true">

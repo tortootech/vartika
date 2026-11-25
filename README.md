@@ -34,9 +34,16 @@ of any site that uses it and can only deliver submissions to the account owner's
 - **Change the key:** edit `.env.production`, run `npm run build`, commit and push.
 - **Where messages go:** the email of the Web3Forms account that created the key (change it in the
   form's settings on web3forms.com).
-- **Allowed domains:** if the form's settings restrict domains, include `tortootech.github.io`
+- **Allowed domains:** if the form's settings restrict domains, include `vartikayadav.in` and `tortootech.github.io`
   (and your Vercel domain if you use one).
 - Without a key the form doesn't fail: it opens the visitor's email app with the message filled in.
+
+## Live addresses
+- **https://vartikayadav.in** (custom domain on Vercel, the main address)
+- https://vartika-a-6b1b.vercel.app (Vercel's own address for the same deployment)
+- https://tortootech.github.io/vartika/ (GitHub Pages copy, served from `docs/`)
+
+Vercel and GitHub Pages both redeploy by themselves on every push.
 
 ## Deploy
 **Vercel** (`vercel.json` points Vercel at the `docs` build folder):

@@ -15,7 +15,7 @@ export const site = {
   title: 'Vartika Yadav: Business Analyst in the making',
   description:
     'Vartika Yadav turns messy business problems into clear requirements, clean data and decisions people can act on. SQL, Excel, Power BI and BA documentation.',
-  url: 'https://tortootech.github.io/vartika/',
+  url: 'https://vartikayadav.in/',
 };
 
 export const intro = {

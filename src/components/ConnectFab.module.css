@@ -1,0 +1,26 @@
+/* floating button */
+.fab {
+  position: fixed;
+  right: calc(var(--gutter) + 6px);
+  bottom: 20px;
+  z-index: 88;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 48px;
+  padding: 0 20px 0 16px;
+  border-radius: 999px;
+  background: var(--slate-deep);
+  color: var(--cream);
+  font: 600 14px/1 var(--font-body);
+  box-shadow: var(--shadow-2);
+  transition: transform 0.35s var(--ease-out), opacity 0.3s, background-color 0.3s;
+}
+.fab:hover { background: var(--navy); transform: translateY(-2px); }
+.fab:focus-visible { outline: 2px solid var(--navy); outline-offset: 3px; box-shadow: 0 0 0 5px var(--cream); }
+.fab[data-hidden] { opacity: 0; pointer-events: none; transform: translateY(12px); }
+:global(html:not(.intro-done)) .fab { opacity: 0; pointer-events: none; visibility: hidden; }
+
+@media (max-width: 767px) {
+  .fab { right: 16px; bottom: 16px; }
+}

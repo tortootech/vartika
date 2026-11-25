@@ -3,7 +3,7 @@ import { nav } from './content';
 import { Cursor } from './components/Cursor';
 import { HUD } from './components/HUD';
 import { Intro } from './components/Intro';
-import { MessageDrawer, MessageFab } from './components/MessageDrawer';
+import { ConnectFab } from './components/ConnectFab';
 import { TopBar } from './components/TopBar';
 import { DeskStage } from './desk/DeskStage';
 
@@ -36,8 +36,7 @@ export default function App() {
           {introDone ? <Rest /> : <div style={{ minHeight: '100vh', background: 'var(--cream)' }} />}
         </Suspense>
       </main>
-      <MessageFab />
-      <MessageDrawer />
+      <ConnectFab />
     </>
   );
 }

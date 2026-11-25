@@ -1,79 +1,84 @@
 .section { z-index: 5; display: flex; flex-direction: column; }
-.inner { padding: calc(var(--bar-h) + 10vh) var(--gutter) 0; flex: 1; }
-.head { color: var(--cream-soft); }
+.inner { padding: calc(var(--bar-h) + 9vh) var(--gutter) 0; flex: 1; }
 
-.blocks { margin-top: 30px; max-width: 1200px; border-top: 1px solid var(--slate); }
-.block { padding: clamp(26px, 4vh, 44px) 0; border-bottom: 1px solid var(--slate); }
-.k { color: var(--cream-soft); }
-.summary {
-  margin-top: 16px;
-  max-width: 62ch;
-  font: 300 clamp(19px, 1.7vw, 26px)/1.5 var(--font-display);
-  letter-spacing: -0.01em;
-}
-.row {
+/* two columns like the reference: details left, form card right */
+.grid {
   display: grid;
-  grid-template-columns: 9em 1fr;
-  align-items: center;
-  gap: 8px 24px;
-  padding: 14px 0;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: clamp(40px, 6vw, 110px);
+  align-items: start;
+  max-width: 1400px;
 }
-.row + .row { border-top: 1px solid color-mix(in srgb, var(--slate) 45%, transparent); }
-.v { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; min-width: 0; }
-.big {
-  font: 400 clamp(20px, 2.2vw, 34px)/1.2 var(--font-display);
-  letter-spacing: -0.02em;
+.details { min-width: 0; }
+
+/* a light slate that clears 4.5:1 on navy for the small caps */
+.kicker, .focus, .k { color: color-mix(in srgb, var(--slate) 78%, var(--cream)); }
+.kicker { display: flex; align-items: center; gap: 14px; letter-spacing: 0.24em; }
+.rule { width: 44px; height: 1px; background: currentColor; }
+
+.name {
+  margin-top: 26px;
+  font-size: clamp(64px, 10.5vw, 176px);
+  line-height: 0.86;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+}
+.name span { display: block; }
+.first { font-weight: 800; color: var(--cream); }
+.last { font-weight: 700; color: var(--slate); }
+
+.focus { margin-top: 26px; letter-spacing: 0.2em; line-height: 1.8; font-size: 12px; }
+.bar { margin: 0 0.8em; opacity: 0.7; }
+.focus > span { white-space: nowrap; } /* "Power BI" never splits */
+
+.list { margin-top: clamp(28px, 5vh, 48px); border-top: 1px solid color-mix(in srgb, var(--slate) 35%, transparent); }
+.row { padding: 16px 0 15px; border-bottom: 1px solid color-mix(in srgb, var(--slate) 35%, transparent); }
+.k { font-size: 11px; letter-spacing: 0.22em; }
+.v { margin: 8px 0 0; display: flex; flex-wrap: nowrap; align-items: center; gap: 8px 14px; min-width: 0; }
+.icon { flex: none; color: var(--slate); }
+.value {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font: 400 clamp(17px, 1.4vw, 21px)/1.3 var(--font-body);
+  color: var(--cream);
   text-decoration: none;
   overflow-wrap: anywhere;
-  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
-  transition: background-size 0.4s var(--ease-out);
+  min-width: 0;
 }
-.big:hover, .big:focus-visible { background-size: 100% 1px; }
-.big:focus-visible, .cta:focus-visible, .copy:focus-visible { outline-color: var(--cream); }
-.plain { font: 400 clamp(18px, 1.6vw, 24px)/1.3 var(--font-display); }
+a.value:hover { text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 1px; }
+a.value:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; }
+/* email: the underline accent from the reference */
+.accent { text-decoration: underline; text-decoration-color: var(--slate); text-decoration-thickness: 2px; text-underline-offset: 7px; }
 .copy {
   min-width: 76px;
-  min-height: 44px;
+  min-height: 36px;
   padding: 0 14px;
   border-radius: 999px;
   border: 1px solid var(--slate);
-  font: 500 12px/1 var(--font-mono);
-  letter-spacing: 0.08em;
+  font: 500 11px/1 var(--font-mono);
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--cream);
   transition: background-color 0.25s, color 0.25s;
 }
 .copy:hover { background: var(--cream); color: var(--navy); }
-.ctaBlock { display: flex; }
-.cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  min-height: 52px;
-  padding: 0 26px;
-  border-radius: 999px;
-  background: var(--cream);
-  color: var(--navy);
-  font: 600 16px/1 var(--font-body);
-  transition: background-color 0.3s, transform 0.35s var(--ease-out);
-}
-.cta:hover { background: var(--cream-2); transform: translateY(-2px); }
+.copy:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; }
+/* touch: a full 44px target without making the pill look bigger */
+@media (pointer: coarse) { .copy { min-height: 44px; } }
 
-.links { display: flex; flex-wrap: wrap; gap: 10px; }
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 44px;
-  padding: 0 20px;
-  border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--cream) 45%, transparent);
-  font: 600 15px/1 var(--font-body);
-  text-decoration: none;
-  transition: background-color 0.3s, color 0.3s, transform 0.35s var(--ease-out);
+.formCol { min-width: 0; }
+
+@media (max-width: 1023px) {
+  .grid { grid-template-columns: 1fr; }
+  .formCol { max-width: 640px; }
 }
-a.btn:hover { background: var(--cream); color: var(--navy); transform: translateY(-2px); }
-a.btn:focus-visible { outline-color: var(--cream); }
+@media (max-width: 767px) {
+  .inner { padding: calc(var(--bar-h) + 40px) 16px 0; }
+  .name { font-size: clamp(56px, 18vw, 96px); }
+  .focus { font-size: 11px; letter-spacing: 0.1em; }
+  .bar { margin: 0 0.5em; }
+}
 
 /* ---------- giant closing line ---------- */
 .closing {
@@ -112,7 +117,7 @@ a.btn:focus-visible { outline-color: var(--cream); }
   align-items: center;
   flex-wrap: wrap;
   gap: 12px;
-  padding: 28px calc(var(--gutter) + 170px) 30px calc(var(--gutter) + 130px); /* clear of the counter and the Message me button */
+  padding: 28px calc(var(--gutter) + 170px) 30px calc(var(--gutter) + 130px); /* clear of the counter and the Connect with me button */
   border-top: 1px solid var(--line-on-navy);
   font-size: 14px;
   color: var(--cream-soft);
@@ -122,10 +127,7 @@ a.btn:focus-visible { outline-color: var(--cream); }
 
 @media (max-width: 767px) {
   .inner { padding: calc(var(--bar-h) + 40px) 16px 0; }
-  .row { grid-template-columns: 1fr; gap: 8px; }
-  .btn { padding: 0 16px; font-size: 14px; }
-  .foot { padding: 24px 16px 92px; } /* room for the counter and the Message me button */
+  .foot { padding: 24px 16px 92px; } /* room for the counter and the Connect with me button */
 }
 /* 44px touch targets */
-.big { display: inline-flex; align-items: center; min-height: 44px; }
 .top { min-height: 44px; }

@@ -81,24 +81,41 @@ export function pageTop(el: HTMLElement) {
   return Math.round(flowBox(el).getBoundingClientRect().top + y);
 }
 
-export function scrollToTarget(target: string | HTMLElement | number, duration = 1.6) {
+export function scrollToTarget(target: string | HTMLElement | number, duration = 1.6, onComplete?: () => void) {
   const el = typeof target === 'string' ? document.querySelector<HTMLElement>(target) : typeof target === 'number' ? null : target;
   if (typeof target !== 'number' && !el) return;
   const y = typeof target === 'number' ? target : pageTop(el!);
   if (lenis) {
-    lenis.scrollTo(y, { duration, force: true });
+    lenis.scrollTo(y, { duration, force: true, onComplete });
     return;
   }
   window.scrollTo({ top: y, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+  if (onComplete) {
+    // native smooth scroll has no callback: wait until the page stops moving
+    let last = -1;
+    const check = () => {
+      if (Math.abs(window.scrollY - last) < 1) return onComplete();
+      last = window.scrollY;
+      window.setTimeout(check, 120);
+    };
+    window.setTimeout(check, 120);
+  }
 }
 
 /**
  * Nav jumps to a section: re-measure every trigger first (so pinned sections above report their
  * real length), then glide to the section's exact top.
  */
-export function scrollToSection(selector: string) {
+export function scrollToSection(selector: string, onComplete?: () => void) {
   ScrollTrigger.refresh();
-  scrollToTarget(selector, 1.4);
+  scrollToTarget(selector, 1.4, onComplete);
+}
+
+/** "Contact" and "Connect with me": land exactly on the Contact section, then put the cursor in the form. */
+export function goToContact() {
+  scrollToSection('#contact', () => {
+    document.querySelector<HTMLElement>('#contact [data-first-field]')?.focus({ preventScroll: true });
+  });
 }
 
 /** Debounced global refresh, used after lazy sections mount. */

@@ -185,7 +185,7 @@
 .section[data-mode='pin'] .title { font-size: clamp(64px, 9vw, 150px); }
 .section[data-mode='pin'] .stage {
   position: absolute;
-  inset: calc(var(--bar-h) + 6px) var(--gutter) 78px; /* clear of the counter and the Message me button */
+  inset: calc(var(--bar-h) + 6px) var(--gutter) 78px; /* clear of the counter and the Connect with me button */
   margin: 0;
   display: block;
 }

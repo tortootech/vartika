@@ -66,3 +66,35 @@
 
 /* 44px touch targets */
 .brand, .pill { min-height: 44px; align-items: center; }
+
+/* ---------- Resume: a quiet secondary button beside Contact ---------- */
+.actions { display: flex; align-items: center; gap: 10px; }
+.resume {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 14px 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--slate);
+  color: var(--cream);
+  font: 500 12px/1 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+}
+/* slate fill on hover, deepened toward navy so the cream label stays readable */
+.resume:hover { background: var(--slate-deep); border-color: var(--slate-deep); color: var(--cream); }
+.resume:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+/* on the light desk and cream sheets, cream ink would vanish: same button in navy ink */
+.desk .resume, .cream .resume { color: var(--navy); border-color: var(--slate-deep); }
+.desk .resume:hover, .cream .resume:hover { color: var(--cream); }
+
+@media (max-width: 767px) {
+  .actions { gap: 8px; }
+  .resume { padding: 0 12px; }
+}
+@media (max-width: 359px) {
+  .resume span { display: none; } /* very narrow phones: icon only (it keeps its accessible name) */
+}

@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { contact, isTodo, site } from '../content';
-import { openDrawer } from '../lib/drawer';
+import { ConnectForm } from '../components/ConnectForm';
+import { resumeUrl } from '../components/TopBar';
 import { gsap, prefersReducedMotion, scrollToTarget } from '../lib/scroll';
 import { useSectionTriggers } from '../lib/useSectionTriggers';
 import s from './Contact.module.css';
@@ -48,21 +49,39 @@ function CopyButton({ text, what }: { text: string; what: string }) {
   );
 }
 
+const I = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round' } as const;
+const pinIcon = (<><path d="M8 14.5s4.5-4.2 4.5-8a4.5 4.5 0 0 0-9 0c0 3.8 4.5 8 4.5 8z" {...I} /><circle cx="8" cy="6.5" r="1.6" {...I} /></>);
+const mailIcon = (<><rect x="1.75" y="3.25" width="12.5" height="9.5" rx="1.5" {...I} /><path d="M2.25 4l5.75 4.5L13.75 4" {...I} /></>);
+const phoneIcon = (<path d="M5.2 1.9l1.4 3.2-1.5 1.1a8 8 0 0 0 4.7 4.7l1.1-1.5 3.2 1.4-.5 2.4c-.1.5-.6.9-1.1.9C6.8 14.1 1.9 9.2 1.9 3.5c0-.5.4-1 .9-1.1z" {...I} />);
+const linkIcon = (<><path d="M6.5 9.5l3-3" {...I} /><path d="M7.5 4.5l1-1a2.8 2.8 0 0 1 4 4l-1 1M8.5 11.5l-1 1a2.8 2.8 0 0 1-4-4l1-1" {...I} /></>);
+const docIcon = (<><path d="M3.75 1.75h5.5l3 3v9.5h-8.5z" {...I} /><path d="M9 1.75V5h3.25M6 8.25h4M6 10.75h4" {...I} /></>);
+
+/** One labelled block of the details list: tiny spaced-caps label, then the value. */
+function Row({ label, icon, children }: { label: string; icon: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <div className={s.row}>
+      <dt className={`mono-label ${s.k}`}>{label}</dt>
+      <dd className={s.v}>
+        <svg viewBox="0 0 16 16" width="16" height="16" className={s.icon} aria-hidden="true">
+          {icon}
+        </svg>
+        {children}
+      </dd>
+    </div>
+  );
+}
+
 export function Contact() {
   const ref = useRef<HTMLElement>(null);
   useSectionTriggers(ref, 'navy', 'cream');
   const emailHref = ok(contact.email) ? `mailto:${contact.email}` : undefined;
-  const links = [
-    ok(contact.linkedin) && { label: 'LinkedIn', href: contact.linkedin },
-    ok(contact.github) && { label: 'GitHub', href: contact.github },
-  ].filter(Boolean) as { label: string; href: string }[];
 
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
     const ctx = gsap.context(() => {
       if (prefersReducedMotion) return;
-      gsap.from('[data-block]', { y: 40, opacity: 0, duration: 0.8, stagger: 0.1, ease: 'power3.out', scrollTrigger: { trigger: '[data-blocks]', start: 'top 80%', toggleActions: 'play none none none' } });
+      gsap.from('[data-block]', { y: 40, opacity: 0, duration: 0.8, stagger: 0.1, ease: 'power3.out', scrollTrigger: { trigger: '[data-blocks]', start: 'top 85%', toggleActions: 'play none none none' } });
       // the line holds in view while cream paint sweeps across it left → right with the scroll
       // (pinSpacing must be explicit: GSAP turns it off when the parent is a flex container)
       gsap
@@ -106,84 +125,81 @@ export function Contact() {
   return (
     <section id="contact" ref={ref} className={`sheet sheet--navy ${s.section}`} aria-labelledby="contact-title">
       <div className={s.inner} data-sheet-inner>
-        <header className={s.head}>
-          <p className="mono-label">[ {contact.label} ]</p>
-          <h2 id="contact-title" className="visually-hidden">
-            {contact.label}
-          </h2>
-        </header>
+        <div className={s.grid} data-blocks>
+          <div className={s.details}>
+            <p className={`mono-label ${s.kicker}`} data-block>
+              <span className={s.rule} aria-hidden="true" />
+              {contact.label}
+            </p>
+            <h2 id="contact-title" className={`display ${s.name}`} data-block>
+              <span className={s.first}>{contact.name[0]}</span>
+              <span className={s.last}>{contact.name[1]}</span>
+            </h2>
+            <p className={`mono-label ${s.focus}`} data-block>
+              {contact.focus.map((f, i) => (
+                <span key={f}>
+                  {i > 0 && (
+                    <span className={s.bar} aria-hidden="true">
+                      |
+                    </span>
+                  )}
+                  {f}
+                </span>
+              ))}
+            </p>
 
-        <div className={s.blocks} data-blocks>
-          <div className={s.block} data-block>
-            <h3 className={`mono-label ${s.k}`}>{contact.summaryTitle}</h3>
-            <p className={s.summary}>{contact.summary}</p>
-          </div>
-
-          <dl className={s.block} data-block>
-            {ok(contact.email) && (
-              <div className={s.row}>
-                <dt className={`mono-label ${s.k}`}>Email</dt>
-                <dd className={s.v}>
-                  <a href={emailHref} className={s.big}>
+            <dl className={s.list} data-block>
+              {ok(contact.location) && (
+                <Row label="Location" icon={pinIcon}>
+                  <span className={s.value}>{contact.location}</span>
+                </Row>
+              )}
+              {ok(contact.email) && (
+                <Row label="Email" icon={mailIcon}>
+                  <a href={emailHref} className={`${s.value} ${s.accent}`}>
                     {contact.email}
                   </a>
                   <CopyButton text={contact.email} what="Email" />
-                </dd>
-              </div>
-            )}
-            {ok(contact.phone) && (
-              <div className={s.row}>
-                <dt className={`mono-label ${s.k}`}>Phone</dt>
-                <dd className={s.v}>
-                  <a href={`tel:${contact.phone}`} className={s.big}>
+                </Row>
+              )}
+              {ok(contact.phone) && (
+                <Row label="Phone" icon={phoneIcon}>
+                  <a href={`tel:${contact.phone}`} className={s.value}>
                     {contact.phoneText}
                   </a>
                   <CopyButton text={contact.phoneText} what="Phone number" />
-                </dd>
-              </div>
-            )}
-            {(links.length > 0 || ok(contact.resume)) && (
-              <div className={s.row}>
-                <dt className={`mono-label ${s.k}`}>Links</dt>
-                <dd className={s.v}>
-                  <ul className={s.links}>
-                    {links.map((l) => (
-                      <li key={l.label}>
-                        <a className={s.btn} href={l.href} target="_blank" rel="noopener noreferrer">
-                          {l.label}
-                          <span aria-hidden="true">↗</span>
-                        </a>
-                      </li>
-                    ))}
-                    {ok(contact.resume) && (
-                      <li>
-                        <a className={s.btn} href={contact.resume} download>
-                          Resume (PDF)
-                          <span aria-hidden="true">↓</span>
-                        </a>
-                      </li>
-                    )}
-                  </ul>
-                </dd>
-              </div>
-            )}
-            {ok(contact.location) && (
-              <div className={s.row}>
-                <dt className={`mono-label ${s.k}`}>Location</dt>
-                <dd className={s.v}>
-                  <span className={s.plain}>{contact.location}</span>
-                </dd>
-              </div>
-            )}
-          </dl>
+                </Row>
+              )}
+              {ok(contact.linkedin) && (
+                <Row label="LinkedIn" icon={linkIcon}>
+                  <a href={contact.linkedin} className={s.value} target="_blank" rel="noopener noreferrer">
+                    {contact.linkedinText}
+                    <span className="visually-hidden"> (opens in a new tab)</span>
+                  </a>
+                </Row>
+              )}
+              {ok(contact.github) && (
+                <Row label="GitHub" icon={linkIcon}>
+                  <a href={contact.github} className={s.value} target="_blank" rel="noopener noreferrer">
+                    {contact.githubText}
+                    <span className="visually-hidden"> (opens in a new tab)</span>
+                  </a>
+                </Row>
+              )}
+              {ok(contact.resume) && (
+                <Row label="Resume" icon={docIcon}>
+                  <a href={resumeUrl} className={s.value} target="_blank" rel="noopener noreferrer">
+                    {contact.resumeText}
+                    <span aria-hidden="true"> ↗</span>
+                    <span className="visually-hidden"> (opens in a new tab)</span>
+                  </a>
+                </Row>
+              )}
+            </dl>
+          </div>
 
-          <div className={`${s.block} ${s.ctaBlock}`} data-block>
-            <button type="button" className={s.cta} onClick={openDrawer} aria-haspopup="dialog">
-              {contact.cta}
-              <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true">
-                <path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-              </svg>
-            </button>
+          <div className={s.formCol} data-block>
+            <ConnectForm />
           </div>
         </div>
       </div>

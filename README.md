@@ -26,12 +26,17 @@ live site and shown as dashed badges in `npm run dev`.
 - **Thesis chapters:** `chapters` in `content.ts` (questions, findings, links).
 
 ## Contact form (Web3Forms, free, no backend)
-1. Go to https://web3forms.com, enter Vartika's email address and copy the access key it emails her.
-2. Locally: copy `.env.example` to `.env` and paste the key after `VITE_WEB3FORMS_KEY=`.
-3. On Vercel: Project → Settings → Environment Variables → add `VITE_WEB3FORMS_KEY` with the key, then redeploy.
+The "Connect with me" form in the Contact section sends through Web3Forms. The key is public by design
+(it only lets the form send to her inbox), but it is still never committed to this repo.
+1. Go to https://web3forms.com, enter `vartikay415@gmail.com` and copy the access key it emails.
+2. **Vercel** (the main deployment): Project → Settings → Environment Variables → add `VITE_WEB3FORMS_KEY`
+   with the key, then Deployments → Redeploy. Vite reads it at build time.
+3. **Local:** copy `.env.example` to `.env` and paste the key after `VITE_WEB3FORMS_KEY=` (`.env` is git-ignored).
 
-The key is read at build time. Without it, the form still works: it opens the visitor's email app
-with the message filled in.
+**GitHub Pages has no runtime environment variables.** The key must be present when the site is *built*.
+The `docs/` folder in this repo is built without it, so on GitHub Pages the form falls back to opening the
+visitor's email app (it never fails silently). To send from Pages too, build in a GitHub Actions workflow
+that reads the key from a repository secret (Settings → Secrets and variables → Actions → `VITE_WEB3FORMS_KEY`).
 
 ## Deploy
 **Vercel** (`vercel.json` points Vercel at the `docs` build folder):

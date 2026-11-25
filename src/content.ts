@@ -302,43 +302,43 @@ export const about = {
 
 export const contact = {
   label: 'Get in touch',
-  /**
-   * LinkedIn-style summary, in her voice. Vartika: paste your exact LinkedIn "About" text over this.
-   * Every fact here is from her resume.
-   */
-  summaryTitle: 'Summary',
-  summary:
-    'I’m a BBA student at JECRC University, Jaipur (2023 to 2027, CGPA 8.7), and I’ve moved from SEO and digital marketing into business analysis. I work in SQL, Excel and Power BI, and I write the requirements documents that turn a vague ask into something a team can build. I’ve done real client work as an SEO intern, served on the student core team at the JECRC Incubation Centre, and co-founded ALCERA, a women’s hygiene startup making algae-based sanitary pads, where I pitched to 10+ investors and built the prototype (Mar 2025 to Feb 2026). I’m looking for Business Analyst roles with the 2027 batch.',
+  /** The big two-line name in the Contact section. */
+  name: ['Vartika', 'Yadav'],
+  focus: ['Business Analysis', 'SQL', 'Power BI', 'Excel'],
+  location: 'Jaipur, Rajasthan, India',
   email: 'vartikay415@gmail.com',
   /** E.164 for the tel: link; `phoneText` is how it reads on the page. */
   phone: '+916261006585',
   phoneText: '+91 62610 06585',
   linkedin: 'https://www.linkedin.com/in/vartika-yadav-b39a23314',
+  linkedinText: 'linkedin.com/in/vartika-yadav-b39a23314',
   github: 'https://github.com/tortootech',
-  /** File in /public. */
+  githubText: 'github.com/tortootech',
+  /** File in /public. Opens in the browser's PDF viewer (no download). */
   resume: 'Vartika_Yadav_Resume.pdf',
-  location: 'Jaipur, Rajasthan',
-  cta: 'Send a message',
+  resumeText: 'View resume',
   closing: "Let's talk.",
   footer: 'Designed around one messy desk. Built with React, GSAP and Lenis.',
 };
 
-/** The contact drawer and its form (Web3Forms; the key is VITE_WEB3FORMS_KEY, see README). */
-export const messageForm = {
-  fab: 'Message me',
-  title: 'Send a message',
-  intro: 'A question, a role, a messy problem: write it here and it goes straight to her inbox.',
-  noKey: 'The form isn’t connected yet, so this opens your email app with the message filled in.',
-  fields: { name: 'Your name', email: 'Your email', subject: 'Subject (optional)', message: 'Message' },
-  send: 'Send message',
+/** The inline "Connect with me" form (Web3Forms; the key is VITE_WEB3FORMS_KEY, see README). */
+export const contactForm = {
+  cta: 'Connect with me',
+  title: 'Connect with me',
+  noKey: 'The form isn’t connected yet, so sending opens your email app with the message filled in.',
+  fields: { name: 'Your name', email: 'Email address', phone: 'Phone number (optional)', message: 'Message' },
+  maxMessage: 2000,
+  send: 'Connect with me',
   sendMail: 'Open in email app',
   sending: 'Sending…',
-  success: ['Thanks, I’ll reply soon.', 'Your message is in her inbox.'],
-  error: 'That didn’t go through. Try again, or email her directly.',
+  success: 'Thanks, I’ll get back to you soon',
+  error: 'That didn’t go through. Try again, or email me directly.',
   retry: 'Try again',
   mailFallback: 'Email instead',
-  close: 'Close',
 };
+
+/** Top-bar resume button. */
+export const resumeButton = { label: 'Resume', aria: 'View resume (opens in a new tab)' };
 
 /* ---------------------------------------------------------------------------
    Thesis: the two research case studies, shown as two "papers" after the toolkit.

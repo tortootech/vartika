@@ -130,6 +130,6 @@ img, svg { display: block; max-width: 100%; }
 /* analyst sheets rendered as images (see desk/Doodles.tsx) */
 .doc-img { width: 100%; height: 100%; user-select: none; -webkit-user-drag: none; }
 
-/* an overlay (case file, message drawer) holds the page in place; the panel scrolls on its own */
+/* an overlay (a case file) holds the page in place; the panel scrolls on its own */
 html.overlay-open, html.overlay-open body { overflow: hidden; }
 html { scrollbar-gutter: stable; } /* no layout shift when the scrollbar hides */

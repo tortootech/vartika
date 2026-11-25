@@ -26,17 +26,17 @@ live site and shown as dashed badges in `npm run dev`.
 - **Thesis chapters:** `chapters` in `content.ts` (questions, findings, links).
 
 ## Contact form (Web3Forms, free, no backend)
-The "Connect with me" form in the Contact section sends through Web3Forms. The key is public by design
-(it only lets the form send to her inbox), but it is still never committed to this repo.
-1. Go to https://web3forms.com, enter `vartikay415@gmail.com` and copy the access key it emails.
-2. **Vercel** (the main deployment): Project → Settings → Environment Variables → add `VITE_WEB3FORMS_KEY`
-   with the key, then Deployments → Redeploy. Vite reads it at build time.
-3. **Local:** copy `.env.example` to `.env` and paste the key after `VITE_WEB3FORMS_KEY=` (`.env` is git-ignored).
+The "Connect with me" form in the Contact section sends through Web3Forms. Its access key is in
+`.env.production` (committed on purpose: a Web3Forms key is public by design, it ships in the browser JS
+of any site that uses it and can only deliver submissions to the account owner's inbox). Every
+`npm run build` picks it up, so the GitHub Pages `docs/` build and any Vercel build both send for real.
 
-**GitHub Pages has no runtime environment variables.** The key must be present when the site is *built*.
-The `docs/` folder in this repo is built without it, so on GitHub Pages the form falls back to opening the
-visitor's email app (it never fails silently). To send from Pages too, build in a GitHub Actions workflow
-that reads the key from a repository secret (Settings → Secrets and variables → Actions → `VITE_WEB3FORMS_KEY`).
+- **Change the key:** edit `.env.production`, run `npm run build`, commit and push.
+- **Where messages go:** the email of the Web3Forms account that created the key (change it in the
+  form's settings on web3forms.com).
+- **Allowed domains:** if the form's settings restrict domains, include `tortootech.github.io`
+  (and your Vercel domain if you use one).
+- Without a key the form doesn't fail: it opens the visitor's email app with the message filled in.
 
 ## Deploy
 **Vercel** (`vercel.json` points Vercel at the `docs` build folder):

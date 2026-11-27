@@ -241,7 +241,7 @@ export const experience: ExperienceItem[] = [
     kind: 'work',
     points: [
       'Building street-light-style infrastructure that generates its own power from solar and traffic wind wake and purifies the air.',
-      'Incubated at IIT Jodhpur; won Envirothon at Dr. B Lal Institute of Technology, earning ₹2 lakh funding (declined).',
+      'Incubated at IIT Jodhpur; won Envirothon at Dr. B Lal Institute of Technology.',
       'IIT Jodhpur representative at the MSME Idea Hackathon; TIE Global Pitchathon (Delhi NCR) finalist.',
     ],
     links: [

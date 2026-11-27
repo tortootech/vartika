@@ -131,3 +131,19 @@ a.value:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; }
 }
 /* 44px touch targets */
 .top { min-height: 44px; }
+/* LinkedIn / GitHub: plain buttons that go straight to the profile */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 20px;
+  border-radius: 999px;
+  border: 1px solid var(--slate);
+  color: var(--cream);
+  font: 600 15px/1 var(--font-body);
+  text-decoration: none;
+  transition: background-color 0.3s, color 0.3s, transform 0.3s var(--ease-out);
+}
+.pill:hover { background: var(--cream); color: var(--navy); transform: translateY(-1px); }
+.pill:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; }

@@ -49,9 +49,8 @@ export const toolkit = {
       id: 'data',
       label: 'Data',
       tools: [
-        { name: 'SQL / PostgreSQL', detail: 'joins, CTEs, aggregates', icon: 'sql', use: 'Pulling and sanity-checking the numbers before anyone builds a chart on them.' },
-        { name: 'Excel', detail: 'pivots, VLOOKUP, dynamic arrays', icon: 'excel', use: 'Quick models, reconciliations and the first look at any new dataset.' },
-        { name: 'Python', detail: 'Pandas, NumPy', icon: 'python', use: 'Cleaning and reshaping data that is too messy for a spreadsheet.' },
+        { name: 'SQL / PostgreSQL', detail: 'joins, aggregations, subqueries', icon: 'sql', use: 'Pulling and sanity-checking the numbers before anyone builds a chart on them.' },
+        { name: 'Excel', detail: 'pivot tables, XLOOKUP, SUMIFS', icon: 'excel', use: 'Quick models, reconciliations and the first look at any new dataset.' },
         { name: 'Power BI', detail: 'DAX measures', icon: 'powerbi', use: 'Dashboards with measures like AOV and repeat rate that answer one question each.' },
       ],
     },
@@ -137,22 +136,24 @@ export const projects: Project[] = [
     title: 'Matri',
     kicker: 'Trust badge repair',
     summary:
-      'A full BRD, FRD and SRS plus an Agile backlog, built from a live stakeholder elicitation session and a live website audit.',
+      'A self-initiated audit: a full BRD, FRD and SRS plus an Agile backlog, built from a live stakeholder elicitation session and a live website audit.',
     tags: ['Requirements', 'Elicitation', 'Agile'],
     problem:
       'Trust badges are the small signals that tell a shopper a brand is legitimate. Matri’s were not doing their job, and the brand was missing from marketplaces where its customers already shop.',
     approach: [
       'Ran a live stakeholder elicitation session to find the real problem behind the request.',
-      'Audited the live website and found broken badge links.',
+      'Audited the live website: 2 of its 6 trust badges linked to dead URLs.',
       'Checked distribution across platforms and documented the gaps, including no presence on Nykaa or Myntra.',
       'Turned the findings into a BRD, FRD and SRS, then broke the work into an Agile backlog.',
+      'Traced 6 requirements end to end (BRD to FRD to backlog) and sized 6 user stories at 20 points for a 2-week sprint.',
     ],
-    deliverables: ['11-page report', 'BRD', 'FRD', 'SRS', 'Agile backlog', 'Live website audit'],
+    deliverables: ['BRD', 'FRD', 'SRS', 'Agile backlog', 'Traceability', 'Live website audit'],
     outcome:
       'A traceable path from one stakeholder conversation to buildable backlog items, with the broken badge links and distribution gaps written up as concrete requirements.',
     metrics: [
-      { value: '11', label: 'Page report' },
-      { value: '3', label: 'Specs: BRD, FRD, SRS' },
+      { value: '2 of 6', label: 'Trust badges with dead links' },
+      { value: '6', label: 'Requirements traced end to end' },
+      { value: '20', label: 'Story points, one 2-week sprint' },
     ],
     link: 'TODO: link to the Matri report',
   },
@@ -215,6 +216,8 @@ export interface ExperienceItem {
   org: string;
   kind: 'work' | 'education' | 'certification';
   points: string[];
+  /** Optional links shown under the entry (open in a new tab). */
+  links?: { label: string; href: string }[];
 }
 
 export const experienceIntro = {
@@ -232,37 +235,43 @@ export const experience: ExperienceItem[] = [
     points: [],
   },
   {
+    dates: 'Feb 2026 – Present',
+    role: 'Co-Founder',
+    org: 'Airflow Station',
+    kind: 'work',
+    points: [
+      'Building street-light-style infrastructure that generates its own power from solar and traffic wind wake and purifies the air.',
+      'Incubated at IIT Jodhpur; won Envirothon at Dr. B Lal Institute of Technology, earning ₹2 lakh funding (declined).',
+      'IIT Jodhpur representative at the MSME Idea Hackathon; TIE Global Pitchathon (Delhi NCR) finalist.',
+    ],
+    links: [
+      { label: 'Website', href: 'https://airflowstation.netlify.app/' },
+      { label: 'GitHub', href: 'https://github.com/tortootech/AirFlow' },
+    ],
+  },
+  {
     dates: 'May 2025 – Nov 2025',
     role: 'SEO Executive (Intern)',
     org: 'The Desired Solution, Jaipur',
     kind: 'work',
     points: [
-      'Grew organic traffic 30% and drove a 120% organic search spike through technical audits and on-page fixes.',
-      'Tracked KPIs and reported to clients.',
-      '186+ Google Business Profile interactions.',
-      '92% site health for The Timeless Oven.',
+      'Weak organic visibility on client sites; ran technical audits and on-page fixes, growing traffic 30% with a 120% search spike.',
+      'Reported KPIs to clients; one site reached 92% site health; drove 186+ Google Business Profile interactions.',
     ],
-  },
-  {
-    dates: 'Mar 2025 – Feb 2026',
-    role: 'Co-Founder',
-    org: 'ALCERA (women’s hygiene startup)',
-    kind: 'work',
-    points: ['Pitched to 10+ investors and built the product prototype.'],
   },
   {
     dates: 'Sep 2024 – Jul 2025',
     role: 'Member, Operations',
     org: 'JIC Student Core Team, JECRC Incubation Centre',
     kind: 'work',
-    points: ['Supported startup incubation and mentoring programs and organised Entrepreneurship Development Programme sessions.'],
+    points: ['Ran operations for 5+ events; supported startup incubation, mentoring and Entrepreneurship Development sessions.'],
   },
   {
-    dates: '2023 – 2027',
+    dates: '2024 – 2027',
     role: 'BBA',
     org: 'JECRC University, Jaipur',
     kind: 'education',
-    points: ['CGPA 8.7'],
+    points: ['CGPA 8.8'],
   },
 ];
 
@@ -297,7 +306,7 @@ export const about = {
   ],
   /** Pieces of the illustration: tags from her path and numbers from her resume. */
   tags: ['BBA', 'SEO', 'startup', 'Excel', 'SQL', 'Power BI'],
-  numbers: ['30%', '120%', '186+', '92%', '10+', '8.7', '2027'],
+  numbers: ['30%', '120%', '186+', '92%', '5+', '8.8', '2027'],
 };
 
 export const contact = {
@@ -311,9 +320,7 @@ export const contact = {
   phone: '+916261006585',
   phoneText: '+91 62610 06585',
   linkedin: 'https://www.linkedin.com/in/vartika-yadav-b39a23314',
-  linkedinText: 'linkedin.com/in/vartika-yadav-b39a23314',
   github: 'https://github.com/tortootech',
-  githubText: 'github.com/tortootech',
   /** File in /public. Opens in the browser's PDF viewer (no download). */
   resume: 'Vartika_Yadav_Resume.pdf',
   resumeText: 'View resume',

@@ -94,6 +94,17 @@ export function Experience() {
                       ))}
                     </ul>
                   )}
+                  {x.links && x.links.length > 0 && (
+                    <p className={s.links} data-rv>
+                      {x.links.map((l) => (
+                        <a key={l.href} className={s.link} href={l.href} target="_blank" rel="noopener noreferrer">
+                          {l.label}
+                          <span aria-hidden="true">↗</span>
+                          <span className="visually-hidden"> (opens in a new tab)</span>
+                        </a>
+                      ))}
+                    </p>
+                  )}
                 </div>
               </li>
             ))}

@@ -2,6 +2,12 @@
 <html lang="en" data-bar-theme="desk">
   <head>
     <meta charset="UTF-8" />
+    <!-- every visit and every refresh starts on the messy desk: never restore the old scroll position -->
+    <script>
+      if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+      window.addEventListener('pagehide', function () { window.scrollTo(0, 0); });
+      window.scrollTo(0, 0);
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vartika Yadav: Business Analyst in the making</title>
     <meta name="description" content="Vartika Yadav turns messy business problems into clear requirements, clean data and decisions people can act on. SQL, Excel, Power BI and BA documentation." />
@@ -27,7 +33,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" /></noscript>
-    <script type="module" crossorigin src="./assets/index-Bt1kOTRY.js"></script>
+    <script type="module" crossorigin src="./assets/index-MVTcTJkE.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/index-Bb_Hofdh.css">
   </head>
   <body>

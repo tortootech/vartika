@@ -2,6 +2,12 @@
 <html lang="en" data-bar-theme="desk">
   <head>
     <meta charset="UTF-8" />
+    <!-- every visit and every refresh starts on the messy desk: never restore the old scroll position -->
+    <script>
+      if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+      window.addEventListener('pagehide', function () { window.scrollTo(0, 0); });
+      window.scrollTo(0, 0);
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vartika Yadav: Business Analyst in the making</title>
     <meta name="description" content="Vartika Yadav turns messy business problems into clear requirements, clean data and decisions people can act on. SQL, Excel, Power BI and BA documentation." />

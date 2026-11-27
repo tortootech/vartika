@@ -32,6 +32,14 @@ function emitProgress() {
 export function initSmoothScroll(): () => void {
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
   window.scrollTo(0, 0);
+  // Browsers can still re-apply the old position once the page has loaded (or when it comes back
+  // from the back/forward cache). Put it back on the desk every time.
+  const toTop = () => {
+    window.scrollTo(0, 0);
+    lenis?.scrollTo(0, { immediate: true, force: true });
+  };
+  window.addEventListener('load', toTop, { once: true });
+  window.addEventListener('pageshow', (e) => e.persisted && toTop());
 
   if (prefersReducedMotion) {
     window.addEventListener('scroll', emitProgress, { passive: true });

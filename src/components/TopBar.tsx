@@ -1,5 +1,5 @@
-import { contact, nav, resumeButton, site } from '../content';
-import { goToContact, scrollToTarget } from '../lib/scroll';
+import { contact, resumeButton, site } from '../content';
+import { scrollToTarget } from '../lib/scroll';
 import { useSection } from '../lib/store';
 import s from './TopBar.module.css';
 
@@ -28,17 +28,6 @@ export function TopBar() {
             <path d="M9.25 1.75v3.25h3.25M6.25 8h4M6.25 10.5h4M6.25 5.75h1.5" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
           </svg>
           <span aria-hidden="true">{resumeButton.label}</span>
-        </a>
-        <a
-          href="#contact"
-          className={s.pill}
-          onClick={(e) => {
-            e.preventDefault();
-            goToContact();
-          }}
-        >
-          <span className={s.pillDot} aria-hidden="true" />
-          {nav.contact}
         </a>
       </div>
     </header>

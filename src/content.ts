@@ -460,7 +460,6 @@ export const githubProfile = 'https://github.com/tortootech';
 
 export interface NavSection { id: string; label: string }
 export const nav = {
-  contact: 'Contact',
   skip: 'Skip to content',
   /** Page order. The HUD counter and its total come from this list. */
   sections: [

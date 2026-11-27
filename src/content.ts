@@ -315,7 +315,7 @@ export const contact = {
   name: ['Vartika', 'Yadav'],
   focus: ['Business Analysis', 'SQL', 'Power BI', 'Excel'],
   location: 'Jaipur, Rajasthan, India',
-  email: 'vartikay415@gmail.com',
+  email: 'vartika.analyst@gmail.com',
   /** E.164 for the tel: link; `phoneText` is how it reads on the page. */
   phone: '+916261006585',
   phoneText: '+91 62610 06585',

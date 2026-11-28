@@ -1,4 +1,4 @@
-import { Suspense, lazy, useCallback, useEffect, useState } from 'react';
+import { Suspense, lazy, useCallback, useState } from 'react';
 import { nav } from './content';
 import { Cursor } from './components/Cursor';
 import { HUD } from './components/HUD';
@@ -7,18 +7,13 @@ import { ConnectFab } from './components/ConnectFab';
 import { TopBar } from './components/TopBar';
 import { DeskStage } from './desk/DeskStage';
 
-/** Everything after the desk lives in its own chunk and mount after first paint. */
+/** Everything after the desk lives in its own chunk, loaded and built while the intro screen holds. */
 const Rest = lazy(() => import('./sections/Rest'));
 
 export default function App() {
   const [introDone, setIntroDone] = useState(false);
   const onIntroDone = useCallback(() => setIntroDone(true), []);
 
-  // warm the lazy chunk while the intro plays
-  useEffect(() => {
-    const id = window.setTimeout(() => void import('./sections/Rest'), 1200);
-    return () => window.clearTimeout(id);
-  }, []);
 
   return (
     <>
@@ -31,9 +26,9 @@ export default function App() {
       {!introDone && <Intro onDone={onIntroDone} />}
       <main id="main">
         <DeskStage />
-        {/* below the fold: mount once the intro is done so it never competes with first paint */}
+        {/* below the fold: built while the intro screen holds still (the intro waits for it, see lib/ready) */}
         <Suspense fallback={<div style={{ minHeight: '100vh', background: 'var(--cream)' }} />}>
-          {introDone ? <Rest /> : <div style={{ minHeight: '100vh', background: 'var(--cream)' }} />}
+          <Rest />
         </Suspense>
       </main>
       <ConnectFab />

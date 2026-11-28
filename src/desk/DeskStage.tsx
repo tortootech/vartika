@@ -383,29 +383,53 @@ export function DeskStage() {
     };
   }, [isMobile, motion]);
 
-  // --- subtle mouse parallax on the messy desk (one CSS variable write per frame) ---
+  // --- subtle mouse parallax on the messy desk ---
+  // Each drifting piece gets its own `translate` write (about 30 elements). Setting one CSS variable
+  // on the whole desk instead made the browser recalculate styles for every node on it per frame.
   useLayoutEffect(() => {
     const world = worldRef.current;
     if (!world || !motion || !window.matchMedia('(hover: hover)').matches) return;
+    let pieces: { el: HTMLElement; d: number }[] = [];
+    const collect = () => {
+      pieces = Array.from(world.querySelectorAll<HTMLElement>(`.${s.par}`)).map((el) => ({
+        el,
+        d: parseFloat(getComputedStyle(el).getPropertyValue('--d')) || 6,
+      }));
+    };
+    collect();
     let raf = 0;
     let mx = 0;
     let my = 0;
+    let parked = false;
+    const draw = () => {
+      raf = 0;
+      // once the desk is tidy the pieces hold still: park them at 0 once, then do nothing
+      if (world.classList.contains(s.tidy)) {
+        if (!parked) pieces.forEach(({ el }) => (el.style.translate = '0px 0px'));
+        parked = true;
+        return;
+      }
+      parked = false;
+      for (const { el, d } of pieces) el.style.translate = `${(mx * d).toFixed(2)}px ${(my * d).toFixed(2)}px`;
+    };
     const onMove = (e: PointerEvent) => {
       mx = (e.clientX / window.innerWidth) * 2 - 1;
       my = (e.clientY / window.innerHeight) * 2 - 1;
-      if (!raf)
-        raf = requestAnimationFrame(() => {
-          raf = 0;
-          world.style.setProperty('--mx', mx.toFixed(3));
-          world.style.setProperty('--my', my.toFixed(3));
-        });
+      if (!raf) raf = requestAnimationFrame(draw);
     };
     window.addEventListener('pointermove', onMove, { passive: true });
+    // the scroll tidies the desk without any mouse movement: settle the pieces then too
+    const mo = new MutationObserver(() => {
+      if (!raf) raf = requestAnimationFrame(draw);
+    });
+    mo.observe(world, { attributes: true, attributeFilter: ['class'] });
     return () => {
+      mo.disconnect();
       window.removeEventListener('pointermove', onMove);
       cancelAnimationFrame(raf);
+      pieces.forEach(({ el }) => (el.style.translate = ''));
     };
-  }, [motion]);
+  }, [motion, isMobile]);
 
   const [first, ...rest] = hero.name.split(' ');
   const zBase = (i: number) => 10 + i * 3;

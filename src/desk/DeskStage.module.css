@@ -9,15 +9,11 @@
 .world {
   --fw: clamp(92px, min(13.5vw, 24vh), 240px);
   --fh: calc(var(--fw) * 1.18);
-  --mx: 0;
-  --my: 0;
-  --pk: 1;
   position: absolute;
   inset: 0;
   transform-origin: 50% 55%;
 }
 :global(html:not(.intro-done)) .motion .world { transform: scale(1.2); } /* the intro pulls the camera back to 1 */
-.tidy { --pk: 0; }
 
 /* ---------- desk surface: flat slate, faint navy grain, soft vignette ---------- */
 .desk {
@@ -32,7 +28,7 @@
 
 /* ---------- shared layers: parallax (translate) + idle float (transform) ---------- */
 .par {
-  translate: calc(var(--mx) * var(--d, 6) * var(--pk) * 1px) calc(var(--my) * var(--d, 6) * var(--pk) * 1px);
+  /* translate is written per piece by the mouse parallax (DeskStage.tsx); the transition smooths it */
   transition: translate 0.9s var(--ease-out);
 }
 .float { animation: float var(--fd, 6s) ease-in-out var(--fdl, 0s) infinite alternate; }

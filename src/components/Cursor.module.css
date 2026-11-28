@@ -5,6 +5,7 @@
   z-index: 300;
   pointer-events: none;
   opacity: 0;
+  will-change: transform;
   transition: opacity 0.3s;
 }
 .on { opacity: 1; }
